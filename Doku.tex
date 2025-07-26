@@ -210,8 +210,8 @@ Durch diese Parallelisierung konnte die Gesamtdauer für die Datenerfassung von 
 \label{sec:scraping_datenspeicherung}
 Die extrahierten und bereinigten Produktdaten werden im \textbf{JSON-Format} gespeichert. Der zweistufige Prozess spiegelt sich auch in der Dateibenennung wider:
 \begin{enumerate}
-    \item \textbf{Scraper-Output:} Der erste Schritt erzeugt eine Datei wie \texttt{..._products_latest.json}.
-    \item \textbf{Enricher-Output:} Der zweite Schritt liest diese Datei ein und erzeugt eine angereicherte Zieldatei, z.B. \texttt{..._products_enriched_latest.json}.
+    \item \textbf{Scraper-Output:} Der erste Schritt erzeugt eine Datei wie \texttt{\ldots\_products\_latest.json}.
+    \item \textbf{Enricher-Output:} Der zweite Schritt liest diese Datei ein und erzeugt eine angereicherte Zieldatei, z.B. \texttt{\ldots\_products\_enriched\_latest.json}.
 \end{enumerate}
 
 Für jeden Lauf wird eine neue JSON-Datei mit einem Zeitstempel im Dateinamen erstellt. Zusätzlich wird eine Datei mit dem Suffix \texttt{\_latest.json} erzeugt oder aktualisiert, die immer die Daten des letzten erfolgreichen Laufs enthält. Dies erleichtert den Zugriff für nachfolgende Prozessschritte.
