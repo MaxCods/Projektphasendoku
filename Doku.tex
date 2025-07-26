@@ -17,6 +17,8 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{textcomp}
+\usepackage{marginnote}
+
 
 % --- SEITENLAYOUT ---
 \geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
@@ -119,11 +121,32 @@
 }
 
 % --- KOPF- UND FUSSZEILEN ---
+\newcommand{\authorinitials}{} % Default leer
+\newcommand{\authormark}[1]{\marginnote{\scriptsize \textsf{#1}}}
+
+% EINZELNER ABSCHNITT:
+% Dieser Abschnitt beschreibt die Datenbankarchitektur. \authormark{MK}
+
+% GANZE KAPITEL:
+% \chapter{Tech Stack und Architekturentscheidungen}
+% \renewcommand{\authorinitials}{DH}
+
 \pagestyle{fancy}
+
 \fancyhf{}
 \fancyhead[L]{Smart Shopping App}
 \fancyhead[R]{\nouppercase{\leftmark}}
 \fancyfoot[C]{\thepage}
+\fancyfoot[L]{\authorinitials}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{Smart Shopping App}
+  \fancyhead[R]{\nouppercase{\leftmark}}
+  \fancyfoot[C]{\thepage}
+  \fancyfoot[L]{\authorinitials}
+}
+
 
 % --- BEGINN DES DOKUMENTS ---
 \begin{document}
@@ -158,6 +181,9 @@
 % TECHNOLOGIE-ÜBERBLICK UND ENTSCHEIDUNGSFINDUNG
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Tech Stack und Architekturentscheidungen}
+\renewcommand{\authorinitials}{DH}
+
+
 \label{chap:tech_stack}
 
 \section{Ziel der App}
@@ -250,6 +276,7 @@ Die gewählte Architektur aus Expo/React Native, Express/Prisma/Clerk, PostgreSQ
 % SCRAPER-KAPITEL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Web Scraping zur Erfassung von Produktdaten}
+\renewcommand{\authorinitials}{MK}
 \label{chap:web_scraping}
 
 \section{Einleitung, ursprünglicher Umfang und finale Problemstellung}
@@ -385,6 +412,7 @@ Diese strukturierte Ausgabe bildet die saubere und zuverlässige Datenbasis für
 % UI-KAPITEL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Benutzeroberfläche (UI)}
+\renewcommand{\authorinitials}{NK}
 \label{chap:ui}
 
 \section{Einleitung}
