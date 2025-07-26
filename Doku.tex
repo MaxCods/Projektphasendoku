@@ -1,0 +1,306 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                            %
+%      Projektdokumentation: Smart Shopping App                              %
+%                                                                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt, a4paper]{report} % report ermöglicht Kapitelstruktur
+
+% --- PRÄAMBEL: Notwendige Pakete ---
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{textcomp}
+
+% --- SEITENLAYOUT ---
+\geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+\setlength{\headheight}{15pt}
+
+% --- HYPERLINKS ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+% --- CODE-LISTING-STILE ---
+
+% Python-Stil
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=Python
+}
+\lstset{style=pythonstyle}
+
+% JSON-Stil
+\lstdefinelanguage{JSON}{
+  basicstyle=\footnotesize\ttfamily,
+  numbers=left,
+  numberstyle=\tiny\color{codegray},
+  stepnumber=1,
+  numbersep=5pt,
+  showstringspaces=false,
+  breaklines=true,
+  frame=lines,
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{blue}, % Schlüsselwörter wie true, false, null
+  stringstyle=\color{codepurple},
+  morestring=[b]",
+  moredelim=[il][\textcolor{codegray}]{:},
+  morecomment=[s]{/*}{*/},
+  morecomment=[l]//,
+}
+
+% --- KOPF- UND FUSSZEILEN ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Smart Shopping App}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+
+% --- BEGINN DES DOKUMENTS ---
+\begin{document}
+
+% Titelseite
+\begin{titlepage}
+    \centering
+    \vspace*{4cm}
+    {\LARGE\bfseries Projektdokumentation \par}
+    \vspace{1.5cm}
+    {\Large \textbf{Smart Shopping App} \\[3mm]}
+    \vspace{1cm}
+    {\large für das Modul\\
+      Softwareentwicklung / Informatik\\}
+    \vspace{1.5cm}
+    {\large
+      \textbf{Teammitglieder:}\\[5mm]
+      David Heppenheimer\\
+      Maximilian Keller\\
+      Niko Keller\\
+      Max Tremel\\
+      Finn Krappitz
+    }
+    \vfill
+    {\large \today}
+\end{titlepage}
+
+\tableofcontents
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SCRAPER-KAPITEL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Web Scraping zur Erfassung von Produktdaten}
+\label{chap:web_scraping}
+
+\section{Einleitung, ursprünglicher Umfang und finale Problemstellung}
+Die Grundlage für dieses Projekt bildete die Notwendigkeit, umfassende und aktuelle Produktdaten von deutschen Supermarktketten zu akquirieren. Hierbei wurde eine strategische Trennung vorgenommen: Die in diesem Kapitel beschriebenen Scraper konzentrieren sich auf die Erfassung der regulären \textbf{Grundpreise} direkt von den Webseiten der Einzelhändler. Parallel dazu wird die Erfassung von zeitlich begrenzten \textbf{Angebotspreisen} über einen separaten Scraper realisiert, der die Daten der Prospekt-Plattform \textit{Marktguru} für eine breitere Auswahl an Märkten ausliest. Die technische Umsetzung dieses Angebot-Scrapers wird in einem gesonderten Kapitel behandelt.
+
+Der anfängliche Anspruch für das hier dokumentierte Grundpreis-Scraping war äußerst ambitioniert: Es sollten die Sortimente einer breiten Palette von Einzelhändlern erfasst werden, darunter \textbf{REWE, EDEKA, Lidl, Kaufland, Marktkauf, tegut, Norma, Aldi Nord} und \textbf{Aldi Süd}.
+
+Eine erste Sondierungsphase offenbarte jedoch schnell erhebliche technische und strukturelle Hürden. Viele der untersuchten Webseiten implementieren hochentwickelte Schutzmechanismen gegen automatisierte Datenabfragen, weisen extrem komplexe und inkonsistente Seitenstrukturen auf oder bieten kein vollständiges Online-Produktsortiment, das für ein systematisches Scraping zugänglich wäre.
+
+Angesichts dieser Herausforderungen wurde eine strategische Entscheidung getroffen: Der Fokus des Projekts wurde auf jene Anbieter reduziert, bei denen eine zuverlässige und wiederholbare Datenerfassung im gegebenen Zeitrahmen realisierbar erschien. Letztendlich konzentrierte sich die Entwicklungsarbeit erfolgreich auf die Webauftritte von \textbf{Aldi Nord}, \textbf{Aldi Süd} und \textbf{Netto}.
+
+Die zentrale technische Herausforderung bei diesen Zieldomänen bestand darin, dass moderne Webseiten Inhalte nicht mehr als statische HTML-Dokumente ausliefern. Stattdessen werden Produktlisten dynamisch mittels JavaScript nachgeladen. Dies erforderte eine sorgfältige Analyse der verbleibenden Webseitenstrukturen und die Auswahl einer robusten Technologie, die in der Lage ist, eine reale Benutzerinteraktion zu simulieren, um die vollständigen und korrekten Daten zu extrahieren.
+
+\section{Technologie-Evaluierung und strategische Entscheidung}
+\subsection{Erster Ansatz: Requests und BeautifulSoup}
+Der initiale Plan sah vor, die Daten mit einer Kombination der Python-Bibliotheken \texttt{requests} und \texttt{BeautifulSoup} zu extrahieren. Dieser Ansatz scheiterte jedoch schnell aus zwei Hauptgründen:
+\begin{enumerate}
+    \item \textbf{Dynamisches Laden von Inhalten:} Bei der Analyse des von \texttt{requests} abgerufenen HTML-Codes wurde festgestellt, dass die Produktlisten fehlten. Die Webseiten laden die Produkte erst nach dem initialen Laden der Seite über JavaScript-APIs nach. \texttt{requests} führt kein JavaScript aus und erhält somit nur das initiale, unvollständige HTML-Dokument.
+    \item \textbf{Bot-Erkennung:} Webseiten nutzen verschiedene Techniken, um automatisierte Skripte zu erkennen. Dazu gehören die Analyse des \texttt{User-Agent}-Headers oder die Überprüfung von Verhaltensmustern. Obwohl Header manuell gesetzt werden können, sind diese einfachen Maßnahmen oft nicht ausreichend.
+\end{enumerate}
+
+\subsection{Die Lösung: Selenium WebDriver}
+Aufgrund der Unzulänglichkeiten des ersten Ansatzes fiel die Wahl auf \textbf{Selenium}. Selenium ist ein Framework zur Automatisierung von Webbrowsern, das eine echte Browser-Instanz (z.B. Google Chrome) steuert.
+
+Dies bietet entscheidende Vorteile:
+\begin{itemize}
+    \item \textbf{Vollständiges Rendern der Seite:} Da ein echter Browser verwendet wird, wird sämtliches JavaScript ausgeführt. Dynamisch nachgeladene Inhalte sind somit im gerenderten HTML-DOM vorhanden und können extrahiert werden.
+    \item \textbf{Simulation von Benutzerinteraktionen:} Selenium kann Aktionen wie das Scrollen der Seite oder das Klicken auf "Mehr anzeigen"-Buttons simulieren, um alle Produkte sichtbar zu machen.
+    \item \textbf{Umgehung von Bot-Erkennung:} Durch die Steuerung eines echten Browsers erscheint die Interaktion für den Server weitaus menschlicher. Zusätzlich wurden in den Skripten Konfigurationen vorgenommen, um die Automatisierung weiter zu verschleiern.
+\end{itemize}
+Die Kombination aus Selenium zum Laden der Seite und BeautifulSoup zum Parsen des resultierenden HTML-Codes (\texttt{driver.page\_source}) erwies sich als die robusteste und erfolgreichste Methode.
+
+\section{Implementierungsdetails: Ein zweistufiger Prozess}
+\label{sec:scraping_prozess}
+Im Verlauf der Entwicklung kristallisierte sich heraus, dass ein monolithischer Ansatz, bei dem alle Daten in einem einzigen Durchgang erfasst werden, ineffizient und fehleranfällig ist. Daher wurde ein robusterer, zweistufiger Prozess implementiert, bestehend aus einem initialen \textbf{Scraping}-Lauf und einem nachgelagerten \textbf{Anreicherungs}-(Enrichment)-Lauf.
+
+\subsection{Strategische Trennung der Prozessschritte}
+Der ursprüngliche Plan sah vor, dass der Scraper eine Kategorieseite lädt, die Links zu allen Produkten extrahiert und dann sofort jede dieser Produkt-Detailseiten einzeln aufruft, um sämtliche Informationen zu sammeln. Dieser Ansatz wurde verworfen, da er die Gesamtlaufzeit massiv erhöht und die Fehlerbehandlung verkompliziert hätte. Die Trennung brachte entscheidende Vorteile wie Robustheit, Effizienz und Modularität.
+
+\subsection{Stufe 1: Der Scraping-Prozess}
+In der ersten Stufe konzentrieren sich die Scraper-Skripte (z.B. \texttt{aldi\_sued\_scraper.py}) darauf, schnell die wesentlichen Basisdaten von den Kategorieseiten zu sammeln. Nach einer verworfenen Idee der vollständigen Automatisierung wurde entschieden, die URLs der Kategorieseiten \textbf{manuell zu pflegen}, um die Zuverlässigkeit zu erhöhen.
+
+Der Ablauf für jede URL ist wie folgt:
+\begin{enumerate}
+    \item \textbf{Browser-Initialisierung und Seitenaufruf:} Starten einer konfigurierten Selenium-WebDriver-Instanz und Navigation zur Ziel-URL.
+    \item \textbf{Interaktion:} Akzeptieren von Cookie-Bannern und Ausführen von Aktionen wie Scrollen und Klicken auf "Mehr anzeigen"-Buttons, um alle Produkte zu laden.
+    \item \textbf{Basis-Datenextraktion:} Übergabe des Seitenquelltextes an BeautifulSoup und Extraktion der Kerninformationen: \textbf{Name, Preis} und die \textbf{URL zur Produkt-Detailseite}.
+\end{enumerate}
+Das Ergebnis dieses ersten Schrittes ist eine JSON-Datei (z.B. \texttt{aldi\_sued\_products\_latest.json}), die eine Liste von Produkten mit diesen rohen Basis-Informationen enthält.
+
+\subsection{Stufe 2: Der Anreicherungsprozess (Enrichment)}
+In der zweiten Stufe kommen die Enricher-Skripte (z.B. \texttt{aldi\_nord\_enricher.py}) zum Einsatz. Sie lesen die vom Scraper erstellte JSON-Datei ein und veredeln die Daten, indem sie jede Produkt-URL aufrufen und Detailinformationen extrahieren.
+
+Der Enricher erledigt folgende Aufgaben:
+\begin{enumerate}
+    \item \textbf{Aufruf der Produkt-URL:} Für jedes Produkt wird die Detailseiten-URL aufgerufen, meist mit der schnelleren `requests`-Bibliothek, da diese Seiten oft statischer sind.
+    \item \textbf{Extraktion von Detailinformationen:} Von der Produktseite werden zusätzliche Daten gesammelt:
+        \begin{itemize}
+            \item \textbf{Markenname}
+            \item \textbf{Hochauflösende Bild-URL}
+            \item \textbf{Detaillierte Grundpreis-Angaben} und Verpackungsbeschreibungen
+        \end{itemize}
+    \item \textbf{Aktualisierung und Speicherung:} Die neuen Informationen werden dem bestehenden Datensatz hinzugefügt und in einer neuen, angereicherten JSON-Datei (z.B. \texttt{aldi\_nord\_products\_enriched\_latest.json}) gespeichert.
+\end{enumerate}
+
+\section{Performance-Optimierung durch Parallelisierung}
+\label{sec:scraping_performance}
+Ein Hauptproblem war die lange Ausführungszeit. Die Lösung war die Implementierung von paralleler Ausführung in \textbf{beiden Prozessschritten} mithilfe des \texttt{concurrent.futures.ThreadPoolExecutor} aus der Python-Standardbibliothek.
+
+Anstatt die URLs sequenziell abzuarbeiten, wird ein "Pool" von Worker-Threads erstellt. Jeder Thread erhält eine URL und führt den Scraping- bzw. Anreicherungsprozess unabhängig und gleichzeitig zu den anderen Threads aus.
+
+\begin{lstlisting}[language=Python, caption={Parallele Ausführung mit ThreadPoolExecutor}]
+max_workers = min(20, len(URLS))
+with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    # Starte die Scraping- oder Enriching-Aufgaben
+    future_to_url = {executor.submit(process_url_function, url): url for url in URLS}
+    
+    for future in as_completed(future_to_url):
+        url = future_to_url[future]
+        try:
+            result = future.result()
+            # Ergebnisse verarbeiten...
+        except Exception as exc:
+            logger.error(f"URL {url} hat eine Ausnahme erzeugt: {exc}")
+\end{lstlisting}
+Durch diese Parallelisierung konnte die Gesamtdauer für die Datenerfassung von mehreren Stunden auf einen Bruchteil dieser Zeit reduziert werden.
+
+\section{Datenspeicherung und finale Datenstruktur}
+\label{sec:scraping_datenspeicherung}
+Die extrahierten und bereinigten Produktdaten werden im \textbf{JSON-Format} gespeichert. Der zweistufige Prozess spiegelt sich auch in der Dateibenennung wider:
+\begin{enumerate}
+    \item \textbf{Scraper-Output:} Der erste Schritt erzeugt eine Datei wie \texttt{..._products_latest.json}.
+    \item \textbf{Enricher-Output:} Der zweite Schritt liest diese Datei ein und erzeugt eine angereicherte Zieldatei, z.B. \texttt{..._products_enriched_latest.json}.
+\end{enumerate}
+
+Für jeden Lauf wird eine neue JSON-Datei mit einem Zeitstempel im Dateinamen erstellt. Zusätzlich wird eine Datei mit dem Suffix \texttt{\_latest.json} erzeugt oder aktualisiert, die immer die Daten des letzten erfolgreichen Laufs enthält. Dies erleichtert den Zugriff für nachfolgende Prozessschritte.
+
+Die Struktur der finalen, angereicherten JSON-Datei ist wie folgt aufgebaut:
+\begin{lstlisting}[language=JSON, caption={Beispielhafte JSON-Struktur der finalen Ausgabedatei}]
+{
+  "metadata": {
+    "source": "aldi_sued",
+    "scraped_at": "2025-07-20 15:43:00",
+    "total_products": 458
+  },
+  "products": [
+    {
+      "store": "aldi_sued",
+      "name": "Bio Eier",
+      "price": 3.29,
+      "brand": "GUT BIO",
+      "unit": "Stueck",
+      "size": "10",
+      "url": "https://www.aldi-sued.de/p/...",
+      "image_url": "https://..."
+    },
+    {
+      "store": "aldi_sued",
+      "name": "Nutella",
+      "price": 4.99,
+      "brand": "Ferrero",
+      "unit": "g",
+      "size": "750",
+      "url": "https://...",
+      "image_url": "https://..."
+    }
+  ]
+}
+\end{lstlisting}
+Diese strukturierte Ausgabe bildet die saubere und zuverlässige Datenbasis für alle weiteren Analysen und Verarbeitungsschritte im Projekt.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% UI-KAPITEL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Benutzeroberfläche (UI)}
+\label{chap:ui}
+
+\section{Einleitung}
+Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den technischen Funktionalitäten der Smart Shopping App her. Sie spielt eine zentrale Rolle bei der täglichen Nutzung der App, da sie das Hinzufügen von Produkten zur Einkaufsliste, das Anzeigen und Bearbeiten der Listen sowie die Darstellung der Preisinformationen und Marktvergleiche ermöglicht.
+
+\section{Grundlegende Anforderungen an die UI}
+\begin{itemize}
+    \item \textbf{Intuitive Bedienbarkeit:} Die Navigation und Bedienung der App soll für alle Nutzer:innen verständlich und schnell erlernbar sein.
+    \item \textbf{Responsives Design:} Die Oberfläche adaptiert sich auf unterschiedliche Bildschirmgrößen (Smartphone, Tablet, Desktop).
+    \item \textbf{Echtzeit-Feedback:} Preisvergleiche und Marktvorschläge sollen unmittelbar nach Eingabe oder Änderung der Einkaufsliste angezeigt werden.
+    \item \textbf{Modulare Architektur:} Die UI ist so konzipiert, dass sie sich um weitere Features (z.B. zusätzliche Märkte oder Angebotsfunktionen) erweitern lässt.
+\end{itemize}
+
+\section{Mockups und zentrale Ansichten}
+% Hier können später Skizzen/Mobile Screenshots oder Diagramme eingefügt werden.
+% Beispiel (mit Platzhalter):
+\begin{figure}[h!]
+    \centering
+    \fbox{
+        \parbox{0.85\textwidth}{
+            \vspace{3cm}
+            \begin{center}
+                \textbf{Abb. 1: Mockup Startansicht der App}\\
+                \emph{(Platzhalter für spätere Screenshots oder Entwürfe)}
+            \end{center}
+            \vspace{3cm}
+        }
+    }
+    \caption{Mockup: Hauptansicht der Smart Shopping App}
+    \label{fig:ui_mockup}
+\end{figure}
+
+\section{Beschreibung zentraler UI-Elemente}
+\begin{enumerate}
+    \item \textbf{Einkaufsliste:} Übersicht über die gewählten Produkte, Mengenanpassung, Möglichkeit zum Abhaken gekaufter Artikel.
+    \item \textbf{Marktvergleichsübersicht:} Darstellung, bei welchem Markt die aktuelle Liste am günstigsten ist und Übersicht über Einzelpreise.
+    \item \textbf{Produktsuche/Autocomplete:} Komfortable Suche mit Vorschlägen, um das Hinzufügen neuer Produkte zu beschleunigen.
+    \item \textbf{Detailsicht:} Zeigt weitere Informationen zum Produkt (z.B. Angaben aus Scraping/Enrichment) oder Angebotspreise.
+    \item \textbf{Nutzerprofil- und Einstellungen:} (z.B. bevorzugte Märkte, Filteroptionen)
+\end{enumerate}
+
+\section{Geplante Weiterentwicklungen}
+% Hier können noch weitere Features oder Ideen wie Barcode-Scanner, ortsbasierte Marktempfehlungen etc. ergänzt werden.
+
+\vspace{1em}
+\noindent
+Dieses Kapitel liefert einen Rahmen für die Dokumentation der Benutzeroberfläche und kann im Laufe des Projekts kontinuierlich mit Inhalten, Screenshots und technischen Details erweitert werden.
+
+
+\end{document}
