@@ -79,6 +79,45 @@
   morecomment=[l]//,
 }
 
+% --- TYPECRIPT-LISTINGS-STIL ---
+\lstdefinelanguage{TypeScript}{
+  keywords={
+    abstract, any, as, async, await, boolean, break, byte, case, catch, char, class,
+    const, continue, debugger, declare, default, delete, do, else, enum, export, extends,
+    false, final, finally, for, from, function, get, if, implements, import, in, infer,
+    instanceof, interface, is, keyof, let, module, namespace, never, new, null, number,
+    object, of, package, private, protected, public, readonly, require, return, set,
+    static, string, super, switch, symbol, this, throw, true, try, type, typeof, var,
+    void, while, with, yield
+  },
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  moredelim=[il][\color{codegray}]{:},
+}
+
+\lstdefinestyle{typescriptstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=TypeScript
+}
+
 % --- KOPF- UND FUSSZEILEN ---
 \pagestyle{fancy}
 \fancyhf{}
@@ -90,6 +129,7 @@
 \begin{document}
 
 % Titelseite
+% TODO: Matrikelnummern eintragen
 \begin{titlepage}
     \centering
     \vspace*{4cm}
@@ -98,15 +138,15 @@
     {\Large \textbf{Smart Shopping App} \\[3mm]}
     \vspace{1cm}
     {\large für das Modul\\
-      Softwareentwicklung / Informatik\\}
+      Programmierprojekt / Softwareentwicklungsprojekt\\}
     \vspace{1.5cm}
     {\large
       \textbf{Teammitglieder:}\\[5mm]
-      David Heppenheimer\\
-      Maximilian Keller\\
-      Nikolas Keller\\
-      Max Tremel\\
-      Finn Krappitz
+      David Heppenheimer (DH)\\
+      Maximilian Keller (MK)\\
+      Nikolas Keller (NK)\\
+      Max Tremel (MT)\\
+      Finn Krappitz (FK)
     }
     \vfill
     {\large \today}
@@ -114,6 +154,97 @@
 
 \tableofcontents
 \cleardoublepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TECHNOLOGIE-ÜBERBLICK UND ENTSCHEIDUNGSFINDUNG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Tech Stack und Architekturentscheidungen}
+\label{chap:tech_stack}
+
+\section{Ziel der App}
+Die Smart Shopping App verfolgt das Ziel, Nutzer:innen bei der Planung ihres Wocheneinkaufs möglichst kosteneffizient zu unterstützen. Anhand einer individuell erstellten Einkaufsliste werden sowohl reguläre Grundpreise als auch zeitlich begrenzte Angebots­preise aus digitalen Prospekten berücksichtigt, um für den gesamten Warenkorb den günstigsten Supermarkt zu ermitteln. Dieses ambitionierte Vorhaben erfordert eine sorgfältige Auswahl und Kombination von Frontend-Technologien, Backend-Architektur, Datenbanklösungen, Authentifizierungsdiensten sowie einer robusten Data-Engineering-Pipeline.
+
+\section{Überblick über den Technologie-Stack}
+Um den hohen Anforderungen an Performance, Wartbarkeit, Skalierbarkeit und Entwicklungsgeschwindigkeit gerecht zu werden, haben wir unseren Tech Stack in fünf Hauptkomponenten gegliedert: das mobile Frontend, die Backend-API, die relationale Datenbank, den Authentifizierungsdienst und die Data-Engineering-Schicht für das Web Scraping.
+
+\section{Frontend}
+\subsection{Technologien: Expo Go, React Native und NativeWind}
+Für das mobile Frontend setzen wir auf Expo Go in Kombination mit React Native. Diese Wahl erlaubt es, mit nur einer Codebasis Applikationen für iOS und Android zu realisieren, was Entwicklungs- und Testaufwände deutlich reduziert. Durch Expo Go entfällt der aufwendige Build-Prozess nativer Apps: Änderungen am UI werden direkt auf realen Geräten oder in Simulatoren sichtbar, was die Iterationszyklen verkürzt und eine enge Feedback-Schleife ermöglicht.
+
+Als Styling-System dient NativeWind, eine Tailwind-CSS-Adaption für React Native. Mit Utility-Klassen lassen sich konsistente Designs ohne umfangreiche Stylesheets implementieren, was den Boilerplate-Aufwand minimiert und die Wartbarkeit steigert.
+
+\subsection{Alternative Ansätze}
+Alternativ zum React-Native-Ansatz standen Frameworks wie Flutter oder Web-View-basierte Lösungen (Ionic/Cordova) zur Debatte. Flutter glänzt mit hoher Rendering-Performance und einem reichhaltigen Widget-Ökosystem, erfordert jedoch den Einsatz von Dart und eine neue Lernkurve für das Team. Ionic und Cordova ermöglichen schnellen Einstieg über HTML/CSS in einer Web-View, sind aber in puncto nativer Performance und Hardware-Integration limitiert. Die Entscheidung fiel schließlich auf Expo/React Native, da wir auf JavaScript/TypeScript-Kompetenz im Team aufbauen und den Vorteil der breiten Community nutzen wollten.
+
+\section{Backend}
+\subsection{Technologieauswahl: Node.js mit Express}
+Als Backend-API kommt Node.js mit dem minimalistischen Framework Express zum Einsatz. Express bietet eine schlanke, unopinionated Basis für den Aufbau von REST-Endpunkten und lässt sich durch Middleware flexibel erweitern. In Verbindung mit TypeScript erreichen wir durch typgesicherte Routen und Datenmodelle bereits zur Entwicklungszeit eine hohe Fehlerfrüherkennung.
+
+\subsection{Datenbankzugriffe mit Prisma}
+Für die Datenbankzugriffe verwenden wir Prisma als ORM. Prisma ermöglicht es, Datenbankschemata deklarativ in einer schema.prisma-Datei zu definieren und mit Migrationsskripten (prisma migrate) versioniert auszurollen. Die generierten TypeScript-Clients bieten eine typgesicherte API für alle CRUD-Operationen und fangen schon zur Kompilierzeit viele Fehler ab.
+
+Ein typisches Beispiel für die Definition eines Prisma-Modells in der Schema-Datei sieht wie folgt aus:
+
+\begin{lstlisting}[language=TypeScript,caption={Schema-Definition mit Prisma}]
+model Product {
+id        Int      @id @default(autoincrement())
+name      String
+price     Float
+store     String
+createdAt DateTime @default(now())
+}
+\end{lstlisting}
+
+Nach dem Befehl npx prisma migrate dev --name init wird die Migration eingespielt und der Prisma Client generiert. Im Code kann man den Client dann wie im folgenden Beispiel verwenden:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Beispielhafte Verwendung des Prisma Client}]
+    import { PrismaClient } from "@prisma/client";
+    import express from "express";
+    
+    const prisma = new PrismaClient();
+    const app = express();
+    
+    app.use(express.json());
+    
+    app.post('/products', async (req, res) => {
+      const { name, price, store } = req.body;
+      try {
+        const newProduct = await prisma.product.create({
+          data: { name, price, store },
+        });
+        console.log("Created product:", newProduct);
+        res.status(201).json(newProduct);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Fehler beim Anlegen des Produkts.' });
+      }
+    });
+    
+    app.listen(3000, () => {
+      console.log("Server laeuft auf Port 3000");
+    });
+    \end{lstlisting}
+
+\subsection{Authentifizierung mit Clerk}
+Zur Authentifizierung und zum User-Management setzen wir Clerk ein. Clerk ist eine Identity‑as‑a‑Service‑Plattform, die vollständig vorkonfigurierte Anmelde‑ und Registrierungsflüsse sowie Passwort‑Zurücksetzen‑Funktionalitäten bereitstellt. Zusätzlich unterstützt Clerk Social‑Login‑Anbieter wie Google, Facebook und Apple und ermöglicht Single‑Sign‑On (SSO) für nahtlose Benutzererlebnisse. Multi‑Faktor‑Authentifizierung (MFA) inklusive E‑Mail‑ und SMS‑Verifizierung ist standardmäßig integriert, ebenso wie Features wie Brute‑Force‑Schutz, automatisches Session‑Timeout und Token‑Revokation.
+
+Mittels der offiziellen React- und React Native SDKs können wir Clerk‑UI-Komponenten direkt in unsere Expo App integrieren, Benutzerattribute verwalten und Zugriffsrechte über Claims abbilden. Clerk übernimmt das komplette Session‑Management sowie die sichere Speicherung von Benutzerdaten nach GDPR‑Standards, wodurch wir erheblichen Entwicklungs- und Wartungs­aufwand für eigene Authentifizierungslösungen einsparen und gleichzeitig hohe Sicherheits- und Compliance-Vorgaben erfüllen.
+
+\subsection{Alternativen zum Backend-Stack}
+Im Vergleich dazu hätten wir auch auf umfassendere Frameworks wie NestJS setzen können, das mit Dependency Injection und Modulen ein höheres Maß an Struktur und Konventionen bietet. Allerdings bringt NestJS eine steilere Lernkurve und mehr Boilerplate mit sich. Auch Python-Frameworks wie Django oder Flask waren im Gespräch: Django punktet mit einem integrierten Admin-Interface, erfordert aber eine zusätzliche Sprache im Projekt.
+
+\section{Datenbank}
+\subsection{Wahl von PostgreSQL}
+Für die persistente Speicherung nutzen wir PostgreSQL. Neben bewährter ACID-Konformität und Transaktions­sicherheit profitieren wir von leistungsfähigen Features wie JSONB-Feldern für flexible Metadaten und komplexen Abfragen. Die umfangreichen Backup- und Replikations­mechanismen stellen den langfristigen Betrieb unter wachsendem Datenaufkommen sicher.
+
+\subsection{Alternative Datenbanken}
+Als Alternative standen relationale Systeme wie MySQL/MariaDB oder NoSQL-Datenbanken wie MongoDB zur Auswahl. MySQL bietet ähnliche Stabilität, ist jedoch in JSON-Operationen etwas eingeschränkter. MongoDB punktet mit schemaloser Flexibilität, macht aber konsistente Joins und Transaktions­szenarien deutlich aufwendiger.
+
+\section{Data-Engineering und Web Scraping}
+\subsection{Technologiewahl und Vorgehen}
+Die Preis- und Angebotsdaten erfassen wir mit Python: Selenium steuert einen echten Browser, um dynamisch nachgeladene Inhalte zuverlässig zu extrahieren, und BeautifulSoup übernimmt das strukturierte Parsen des resultierenden HTML. Ein klar getrenntes Zwei-Stufen-Konzept – ein Basisscraping für Name, Preis und Detail-URLs, gefolgt von einem Enrichment-Durchlauf für Marken-, Verpackungs- und Bildinformationen – sorgt für Modularität und Fehlertoleranz. Beide Schritte nutzen concurrent.futures.ThreadPoolExecutor zur Parallelisierung, um Laufzeiten zu minimieren. In den folgenden Kapiteln gehen wir detailliert auf die einzelnen Scraping- und Enrichment-Prozesse ein.
+
+\section{Zusammenfassung}
+Die gewählte Architektur aus Expo/React Native, Express/Prisma/Clerk, PostgreSQL und Python-Scraping schafft eine ausgewogene Balance zwischen schneller Frontend-Entwicklung, typgesicherter Backend-Logik, sicherer Authentifizierung, zuverlässiger Datenhaltung und robustem Data-Engineering. Diese Basis ermöglicht es, die folgenden Kapitel – von Web Scraping über API-Design bis zur UI-Implementierung – konsistent und zielführend weiterzuführen.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SCRAPER-KAPITEL
