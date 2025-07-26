@@ -304,7 +304,7 @@ Aufgrund der Unzulänglichkeiten des ersten Ansatzes fiel die Wahl auf \textbf{S
 Dies bietet entscheidende Vorteile:
 \begin{itemize}
     \item \textbf{Vollständiges Rendern der Seite:} Da ein echter Browser verwendet wird, wird sämtliches JavaScript ausgeführt. Dynamisch nachgeladene Inhalte sind somit im gerenderten HTML-DOM vorhanden und können extrahiert werden.
-    \item \textbf{Simulation von Benutzerinteraktionen:} Selenium kann Aktionen wie das Scrollen der Seite oder das Klicken auf "Mehr anzeigen"-Buttons simulieren, um alle Produkte sichtbar zu machen.
+    \item \textbf{Simulation von Benutzerinteraktionen:} Selenium kann Aktionen wie das Scrollen der Seite oder das Klicken auf "`Mehr anzeigen"'-Buttons simulieren, um alle Produkte sichtbar zu machen.
     \item \textbf{Umgehung von Bot-Erkennung:} Durch die Steuerung eines echten Browsers erscheint die Interaktion für den Server weitaus menschlicher. Zusätzlich wurden in den Skripten Konfigurationen vorgenommen, um die Automatisierung weiter zu verschleiern.
 \end{itemize}
 Die Kombination aus Selenium zum Laden der Seite und BeautifulSoup zum Parsen des resultierenden HTML-Codes (\texttt{driver.page\_source}) erwies sich als die robusteste und erfolgreichste Methode.
@@ -322,7 +322,7 @@ In der ersten Stufe konzentrieren sich die Scraper-Skripte (z.B. \texttt{aldi\_s
 Der Ablauf für jede URL ist wie folgt:
 \begin{enumerate}
     \item \textbf{Browser-Initialisierung und Seitenaufruf:} Starten einer konfigurierten Selenium-WebDriver-Instanz und Navigation zur Ziel-URL.
-    \item \textbf{Interaktion:} Akzeptieren von Cookie-Bannern und Ausführen von Aktionen wie Scrollen und Klicken auf "Mehr anzeigen"-Buttons, um alle Produkte zu laden.
+    \item \textbf{Interaktion:} Akzeptieren von Cookie-Bannern und Ausführen von Aktionen wie Scrollen und Klicken auf "`Mehr anzeigen"'-Buttons, um alle Produkte zu laden.
     \item \textbf{Basis-Datenextraktion:} Übergabe des Seitenquelltextes an BeautifulSoup und Extraktion der Kerninformationen: \textbf{Name, Preis} und die \textbf{URL zur Produkt-Detailseite}.
 \end{enumerate}
 Das Ergebnis dieses ersten Schrittes ist eine JSON-Datei (z.B. \texttt{aldi\_sued\_products\_latest.json}), die eine Liste von Produkten mit diesen rohen Basis-Informationen enthält.
@@ -346,7 +346,7 @@ Der Enricher erledigt folgende Aufgaben:
 \label{sec:scraping_performance}
 Ein Hauptproblem war die lange Ausführungszeit. Die Lösung war die Implementierung von paralleler Ausführung in \textbf{beiden Prozessschritten} mithilfe des \texttt{concurrent.futures.ThreadPoolExecutor} aus der Python-Standardbibliothek.
 
-Anstatt die URLs sequenziell abzuarbeiten, wird ein "Pool" von Worker-Threads erstellt. Jeder Thread erhält eine URL und führt den Scraping- bzw. Anreicherungsprozess unabhängig und gleichzeitig zu den anderen Threads aus.
+Anstatt die URLs sequenziell abzuarbeiten, wird ein "`Pool"' von Worker-Threads erstellt. Jeder Thread erhält eine URL und führt den Scraping- bzw. Anreicherungsprozess unabhängig und gleichzeitig zu den anderen Threads aus.
 
 \begin{lstlisting}[language=Python, caption={Parallele Ausführung mit ThreadPoolExecutor}]
 max_workers = min(20, len(URLS))
@@ -407,6 +407,134 @@ Die Struktur der finalen, angereicherten JSON-Datei ist wie folgt aufgebaut:
 }
 \end{lstlisting}
 Diese strukturierte Ausgabe bildet die saubere und zuverlässige Datenbasis für alle weiteren Analysen und Verarbeitungsschritte im Projekt.
+
+\section{Import der Produktdaten in die Datenbank: Normalisierung \& Matching}
+
+Nach der erfolgreichen Extraktion und Anreicherung der Produktdaten folgt ein zentraler Schritt in der gesamten Data-Engineering-Pipeline: Das zuverlässige und konsistente Importieren aller Produkte in die zentrale Datenbank. Dieser Abschnitt beschreibt detailliert, wie das Import-Skript arbeitet, welche Herausforderungen bezüglich Datenkonsistenz und Matching identifiziert wurden und wie sie durch gezielte Normalisierungs- und Matchingstrategien gelöst wurden.
+
+\subsection{Ablauf und technische Einbettung des Imports}
+
+Der Importprozess wird als eigenständiges Node.js-Skript implementiert und initialisiert nach dem Laden der Scraping-Ergebnisse die Verbindung sowohl zur Datenbank als auch zum Storage für Produktbilder. Mit Hilfe von Prisma als ORM werden sämtliche Datenbankzugriffe typgesichert und migrationssicher ausgeführt.
+
+\begin{enumerate}
+    \item \textbf{Dateisuche \& Laden:} Zunächst werden automatisiert alle relevanten JSON-Dateien (aus unterschiedlichen Scraper-Quellen/Stores) gefunden, eingelesen und in ein gemeinsames Produktarray umgewandelt. Dabei wird bereits der Store-Name jedem Produkt zugeordnet.
+    \item \textbf{Batch-Import (Parallelisierung):} Um die große Produktmenge effizient zu verarbeiten, werden die Produkte in Batches (z. B. à 50 Produkte) aufgeteilt und jeweils mehrere Batches parallel importiert. Innerhalb eines Batches erfolgt die interne Verarbeitung wiederum parallel, aber mit sorgfältigem Race-Condition-Handling.
+    \item \textbf{Produktverarbeitung:} Für jedes Produkt erfolgt jetzt ein mehrstufiger Importvorgang (siehe Algorithmus unten).
+\end{enumerate}
+
+\subsection{Daten-Normalisierung für zuverlässiges Matching}
+
+Eine der größten Herausforderungen beim Import mehrerer Produktdaten aus unterschiedlichen Quellen besteht darin, identische oder faktisch gleiche Produkte zu erkennen und eindeutig in der Datenbank zu verknüpfen. Ein simples Abgleichen von Produktnamen führt angesichts unterschiedlichster Schreibweisen, Mengenangaben, Sonderzeichen und Dateninkonsistenzen schnell zu fehlerhaften Duplikaten oder nicht erkannten Matches.
+
+\textbf{Die wichtigsten Normalisierungsschritte sind:}
+
+\begin{itemize}
+    \item \textbf{Name:}
+      \begin{itemize}
+        \item Entfernen von führenden/trailing Leerzeichen, Sonderzeichen und überflüssigen Kommas
+        \item Vereinheitlichung durch Kleinschreibung und Entfernen von Akzentzeichen (z.B. "`Crème fraîche"' $\to$ "`creme fraiche"')
+        \item Extra-Parsing von Mengenangaben (z. B. "`10 x 50g"' $\to$ 500g Gesamtgewicht)
+      \end{itemize}
+    \item \textbf{Marke:}
+      \begin{itemize}
+        \item Ebenfalls Normalisierung per Großschreibung und Entfernen von Akzenten (z.B. "`NESTLÉ"' $\to$ "`NESTLE"')
+        \item Konsistenter Vergleich entgegen verschiedenster Schreibweisen der Herstellerseiten
+      \end{itemize}
+    \item \textbf{Menge und Einheit:}
+      \begin{itemize}
+        \item Intelligente Korrektur offensichtlicher Einheiten-Fehler (z.B. "`500-kg-Packung"' bei typischen Lebensmittelgrößen als "`500-g-Packung"' korrigieren)
+        \item Parsing-Logik erkennt und vereinheitlicht alle häufigen Darstellungen (z.B. "`ml/l"', "`gr/kg"', "`Stück"')
+      \end{itemize}
+    \item \textbf{Kategorie:}
+      \item Die Einordnung in eine oder mehrere Kategorien wird automatisiert mit einem eigens entwickelten "`CategoryDetector"' durchgeführt, der nach Mustern in Produktnamen sucht.
+\end{itemize}
+
+\subsubsection{Codebeispiel: Name-Normalisierung}
+\begin{lstlisting}[language=TypeScript, caption={Vereinheitlichung von Produktnamen}]
+export function cleanProductName(name: string): string {
+  if (!name) return name;
+  return name
+    .trim()                   // Leerzeichen entfernen
+    .replace(/[\s,]+$/, "")   // Kommas & Leerzeichen am Ende entfernen
+    .toLowerCase();
+}
+\end{lstlisting}
+
+\subsection{Matching-Strategie: Wie werden gleiche Produkte erkannt?}
+
+Eine der Kernausforderungen war es, die \emph{gleichen} Produkte unterschiedlicher Supermärkte als eindeutige Entitäten in der Datenbank zu pflegen, sodass für einen Produktvergleich marktübergreifende Preise angezeigt werden können.
+
+\textbf{Der Matching- und Import-Algorithmus arbeitet wie folgt:}
+\begin{enumerate}
+    \item \textbf{Normalisierung:} Jeder Produktdatensatz wird zunächst durch den Normalisierer geschickt: Name, Marke, Menge, Einheit usw.
+    \item \textbf{Brand-Handling:}
+        \begin{itemize}
+            \item Für jede Marke wird diese zuerst im Cache gesucht (zur Minimierung von Datenbankzugriffen), ansonsten case-insensitiv per Upsert in der Datenbank erzeugt/gefunden.
+        \end{itemize}
+    \item \textbf{Produkt-Suche:}
+        \begin{itemize}
+            \item Produktsuche erfolgt nach normalisiertem Namen und zugehöriger Marke. Gibt es bereits ein solches Produkt in der Datenbank (Name und Brand), wird dieses weiter verwendet, ansonsten neu angelegt.
+        \end{itemize}
+    \item \textbf{Produktvariante:}
+        \begin{itemize}
+            \item Jede Produktvariante (z.B. "`500g"' oder "`1l"'-Version derselben Ware) bekommt einen eindeutigen Identifier (ProduktID + Größe/Einheit).
+        \end{itemize}
+    \item \textbf{Store-Angebot (Preis je Markt):}
+        \begin{itemize}
+            \item Für jede Kombination aus Markt und Produktvariante wird ein Preis-Datensatz geschrieben/aktualisiert. Race-Conditions durch parallele Importe werden durch explizite Fehlerbehandlung im Upsert-Prozess abgefangen.
+        \end{itemize}
+    \item \textbf{Kategorien:}
+        \begin{itemize}
+            \item Jede Variante erhält alle passenden Kategorien laut Detektor, Mehrfachzuweisungen werden durch Many-to-many-Relationen abgebildet.
+        \end{itemize}
+    \item \textbf{Bilder:}
+        \begin{itemize}
+            \item Produktbilder werden pro Variante verwaltet und versioniert im Object Storage abgelegt.
+        \end{itemize}
+\end{enumerate}
+
+\subsubsection{Race-Condition-Handling und Performance}
+Da viele Importe parallel ablaufen, besteht die Gefahr, dass exakt in diesem Moment zwei Prozesse denselben Datensatz neu anlegen möchten. Daher wird systematisch mit sogenannten "`Upserts"' (Prisma ORM) gearbeitet: Es wird nach einem Datensatz gesucht, ansonsten neu angelegt, und im Fehlerfall (z.B. Unique Constraint) nochmals abgeglichen. Eigene Map-Caches für Marken, Kategorien und Stores verhindern unnötig viele DB-Zugriffe.
+
+\subsubsection{Auszug aus dem Import-Algorithmus}
+\begin{lstlisting}[style=typescriptstyle, caption={Produkt-Import: Algorithmus bei Name-Matching und DB-Schreibvorgang}]
+// 1. Brand normalisieren & upsert
+const normalizedBrand = normalizeAccents(product.brand.toUpperCase());
+// 2. Produkt nach (name + brand) suchen oder neu anlegen
+let product_db = await prisma.product.findFirst({
+   where: { name: productName, brandId: brand?.id || null }
+});
+if (!product_db) {
+  product_db = await prisma.product.create({
+    data: { name: productName, brandId: brand?.id || null, /* ... */ }
+  });
+}
+// 3. Variantenhandling (Größe/Einheit)
+let productVariant = await prisma.productVariant.findFirst({/* ... */});
+if (!productVariant) {
+   productVariant = await prisma.productVariant.create({/* ... */});
+}
+\end{lstlisting}
+
+\subsection{Kategorizierung: Automatisierte Einordnung via Pattern-Matching}
+
+Ein weiteres wichtiges Element: Produkte werden mithilfe von Mustererkennung im Produktnamen \textbf{vollständig automatisiert kategorisiert}. Hierzu ist ein flexibles System entwickelt, bei dem zu jeder Kategorie eine Liste von typischen Schlüsselbegriffen gepflegt wird (z.B. "`milch"', "`joghurt"', "`kaffee"'), die als Pattern (inklusive Substrings) auf den normalisierten Produktnamen angewendet werden. So ist sichergestellt, dass alle Produkte marktplatzübergreifend nach gleichem Regelwerk einsortiert werden.
+
+\begin{lstlisting}[style=typescriptstyle, caption={Beispielstruktur: Kategorie-Definitionen als JSON}]
+{
+  "category": "Milchprodukte",
+  "patterns": ["milch", "joghurt", "skyr", "kefir", "kondensmilch"]
+}
+\end{lstlisting}
+
+\emph{Bei jedem Import:} Es wird eine Liste aller passender Kategorien gesammelt und die Zuordnung in einer Many-to-many-Tabelle persistiert.
+
+\subsection{Fazit: Garantierte Datenkonsistenz für Marktvergleich}
+
+Dank der konsequenten Normalisierung, intelligenter Matching-Strategien und paralleler Datenbanklogik entsteht ein zentrales Produktschema, das alle Markt-Angebote, Varianten, Marken und Kategorien zuverlässig verbindet. Damit steht eine valide, vergleichbare und stets aktuelle Produktbasis für die App zur Verfügung.
+
+\cleardoublepage
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UI-KAPITEL

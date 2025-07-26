@@ -1,8 +1,8 @@
-
+# Ignore everything
 *
 
-
+# But not doku.tex
 !doku.tex
 
-
+# And not .gitignore itself
 !.gitignore
