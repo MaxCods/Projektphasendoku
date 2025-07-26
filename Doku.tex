@@ -104,7 +104,7 @@
       \textbf{Teammitglieder:}\\[5mm]
       David Heppenheimer\\
       Maximilian Keller\\
-      Niko Keller\\
+      Nikolas Keller\\
       Max Tremel\\
       Finn Krappitz
     }
@@ -297,6 +297,501 @@ Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den tech
 
 \section{Geplante Weiterentwicklungen}
 % Hier können noch weitere Features oder Ideen wie Barcode-Scanner, ortsbasierte Marktempfehlungen etc. ergänzt werden.
+
+\section{Home-Screen}
+\label{sec:home_screen}
+
+\subsection{Nutzerperspektive}
+
+\subsubsection{Zweck des Screens}
+Der Screen dient als zentrale Übersicht für die Einkaufsliste des Nutzers. Hier kann der Nutzer:
+\begin{itemize}
+    \item Seine aktuelle Einkaufsliste einsehen
+    \item Einzelne Produkte aus der Liste entfernen
+    \item Die gesamte Liste archivieren
+    \item Eine neue Einkaufsliste anlegen, falls noch keine existiert
+    \item Den Gesamtpreis der Liste sehen
+    \item Zur Detailansicht der Liste wechseln
+\end{itemize}
+
+\subsubsection{UI/UX-Beschreibung}
+
+\textbf{Wichtige UI-Elemente:}
+\begin{itemize}
+    \item \textbf{TopBar:} Navigationsleiste am oberen Rand
+    \item \textbf{ScrollView:} Zeigt die Einkaufsliste als scrollbare Kartenansicht
+    \item \textbf{Card-Komponenten:} Jede Karte repräsentiert ein Produkt mit Name, Marke, Menge, Preis, Bild und Lösch-Button
+    \item \textbf{ButtonSquare:} Button zum Wechsel in die Detailansicht der Liste
+    \item \textbf{Floating View:} Zeigt den Gesamtpreis der Liste an
+    \item \textbf{"Create Shopping List"-Button:} Erscheint, wenn noch keine Liste existiert
+\end{itemize}
+
+\noindent\textbf{Interaktive Elemente:}
+\begin{itemize}
+    \item Produkt löschen: Über den Lösch-Button auf jeder Produktkarte
+    \item Einkaufsliste archivieren: Über einen Button (nicht im Ausschnitt, aber im Code vorgesehen)
+    \item Neue Liste anlegen: Über den "Create Shopping List"-Button
+    \item Zur Detailansicht wechseln: Über den Button mit Einkaufswagen-Icon
+\end{itemize}
+
+\subsubsection{User Flow}
+
+\textbf{Von welchem Screen kommt der Nutzer hierher?}
+Meistens über die Tab-Navigation als Startscreen oder nach dem Login.
+
+\noindent\textbf{Wohin geht es von hier aus?}
+\begin{itemize}
+    \item Zur Detailansicht der Einkaufsliste (/listDetails)
+    \item Zu Produktdetails (über die Produktkarte, falls implementiert)
+    \item Archivieren oder neue Liste anlegen
+\end{itemize}
+
+\subsection{Technische Perspektive}
+
+\subsubsection{Code-Architektur}
+
+\textbf{Komponenten:}
+\begin{itemize}
+    \item ListScreen (Hauptkomponente)
+    \item TopBar (Navigationsleiste)
+    \item Card (Produktkarte)
+    \item ButtonSquare (Floating Action Button)
+    \item LoadingSpinner (Ladeanzeige)
+\end{itemize}
+
+\noindent\textbf{State Management:}
+\begin{itemize}
+    \item React State (useState, useEffect, useCallback)
+    \item Kontext: useProductContext für Produktdaten und Ladezustand
+\end{itemize}
+
+\noindent\textbf{Services/APIs:}
+api-Service für alle Backend-Requests (z.B. getShoppingListItems, createShoppingList, deleteFromShoppingList, archiveShoppingList)
+
+\subsubsection{Wichtige Funktionen/Methoden}
+\begin{itemize}
+    \item \textbf{loadList:} Lädt die aktuelle Einkaufsliste und prüft, ob eine existiert.
+    \item \textbf{handleCreateShoppingList:} Erstellt eine neue Einkaufsliste via API.
+    \item \textbf{handleDelete:} Löscht ein Produkt aus der Liste.
+    \item \textbf{handleArchiveList:} Archiviert die aktuelle Liste.
+    \item \textbf{calculateTotal:} Berechnet den Gesamtpreis der Einkaufsliste.
+    \item \textbf{Scroll-Handling:} Zeigt/Versteckt Floating Buttons je nach Scrollposition (Performance-Optimierung mit react-native-reanimated).
+\end{itemize}
+
+\subsubsection{Besondere Herausforderungen}
+\begin{itemize}
+    \item \textbf{Performance-Optimierung:} Floating Buttons werden mit Reanimated animiert, um ein flüssiges UI zu gewährleisten.
+    \item \textbf{Fehlerbehandlung:} Umfangreiche Alerts und Fallbacks, falls API-Requests fehlschlagen.
+    \item \textbf{User Experience:} Unterschiedliche UI-Zustände (keine Liste, leere Liste, gefüllte Liste) werden klar unterschieden und kommuniziert.
+    \item \textbf{Synchronisation:} Die Liste wird bei jedem Fokus auf den Screen neu geladen (useFocusEffect), um immer aktuelle Daten zu zeigen.
+\end{itemize}
+
+\section{Explore-Screen}
+\label{sec:explore_screen}
+
+\subsection{Nutzerperspektive}
+
+\subsubsection{Zweck des Screens}
+Der Explore-Screen dient dazu, dem Nutzer eine Übersicht über Produktkategorien und verfügbare Supermärkte zu geben. Hier kann der Nutzer gezielt nach Produkten suchen, Kategorien durchstöbern oder Angebote von bestimmten Märkten anzeigen lassen.
+
+\subsubsection{UI/UX-Beschreibung}
+
+\textbf{Zentrale Elemente:}
+\begin{itemize}
+    \item Oben befindet sich eine Navigationsleiste (TopBar).
+    \item Ein prominenter Button ('Add Products') ermöglicht die Produktsuche.
+    \item Darunter werden die Lieblingskategorien ('Your Favourites') angezeigt.
+    \item Es folgt eine Liste von Kategorien (z.B. Gemüse, Obst, Milch).
+    \item Am unteren Ende werden verfügbare Stores (Supermärkte) als auswählbare Felder angezeigt, farblich hervorgehoben je nach Markt.
+\end{itemize}
+
+\noindent\textbf{Interaktive Elemente:}
+\begin{itemize}
+    \item 'Add Products'-Button: Öffnet die Produktsuche.
+    \item Kategorien und Stores: Antippbar, führen zu einer gefilterten Produktsuche.
+\end{itemize}
+
+\subsubsection{User Flow}
+
+\textbf{Einstieg:} Der Nutzer gelangt meist von einem Tab-Menü oder der Hauptnavigation auf diesen Screen.
+
+\noindent\textbf{Von hier aus kann der Nutzer:}
+\begin{itemize}
+    \item Über den "Add Products"-Button zur Produktsuche navigieren.
+    \item Über eine Kategorie oder einen Store gezielt Produkte filtern und anzeigen lassen.
+    \item Nach Auswahl wird der Nutzer zur Such-/Produktübersicht weitergeleitet.
+\end{itemize}
+
+\subsection{Technische Perspektive}
+
+\subsubsection{Code-Architektur}
+
+\textbf{Hauptkomponente:} explore (React Functional Component)
+
+\noindent\textbf{Eingesetzte Komponenten:}
+\begin{itemize}
+    \item TopBar (Navigation)
+    \item SearchButton (Produktsuche)
+    \item CategorieField (Favoriten)
+    \item CategorieGroup (Kategorien \& Stores)
+\end{itemize}
+
+\noindent\textbf{Datenmodell:} Store-Typ aus den globalen Typen
+
+\noindent\textbf{API:} Daten werden über api.getStores() geladen
+
+\noindent\textbf{State Management:} React useState/useEffect (lokaler State)
+
+\subsubsection{Wichtige Funktionen/Methoden}
+
+\begin{itemize}
+    \item \textbf{getStoreColor(name: string):} Weist jedem Store eine spezifische Farbe zu.
+    \item \textbf{useEffect + fetchStores:} Lädt beim ersten Rendern die Store-Liste asynchron von der API und speichert sie im State.
+    \item \textbf{Interaktive Elemente (onPress):} Navigieren mit router.push zur Suchseite, ggf. mit Store-Filter.
+\end{itemize}
+
+\subsubsection{Besondere Herausforderungen}
+\begin{itemize}
+    \item Dynamisches Laden und Anzeigen der Stores mit Farbcodierung.
+    \item Fehlerbehandlung beim Laden der Stores (Alert bei Fehler).
+    \item Übersichtliche und intuitive UI trotz vieler Auswahlmöglichkeiten.
+\end{itemize}
+
+\section{Search-Screen}
+\label{sec:search_screen}
+
+\subsection{Nutzerperspektive}
+
+\subsubsection{Zweck des Screens}
+Der Nutzer kann auf diesem Screen gezielt nach Produkten suchen, Filter anwenden (Kategorie, Store) und Produkte zur Einkaufsliste hinzufügen. Ziel ist es, schnell und komfortabel passende Angebote zu finden.
+
+\subsubsection{UI/UX-Beschreibung}
+
+\textbf{Zentrale Elemente:}
+\begin{itemize}
+    \item \textbf{Suchleiste:} Oben mittig, ermöglicht die Suche nach Produktnamen oder Marken.
+    \item \textbf{Filter-Button:} Links neben der Suchleiste öffnet ein Modal für Filteroptionen (Kategorie, Store).
+    \item \textbf{Cancel-Button:} Rechts neben der Suchleiste, löscht die aktuelle Suche.
+    \item \textbf{Produktliste:} Zeigt gefilterte oder alle Produkte als Karten an, sortiert nach günstigstem Preis.
+    \item \textbf{Produktkarte:} Enthält Produktdetails und einen Button (PlusCircle), um das Produkt zur Einkaufsliste hinzuzufügen.
+    \item \textbf{Filter-Modal:} Ermöglicht Mehrfachauswahl von Kategorien und Stores, sowie das Zurücksetzen oder Anwenden der Filter.
+    \item \textbf{Ladespinner:} Wird angezeigt, solange die Produktdaten geladen werden.
+\end{itemize}
+
+\noindent\textbf{Interaktive Elemente:}
+\begin{itemize}
+    \item Suchleiste (Textinput)
+    \item Filter-Button (öffnet Modal)
+    \item Cancel-Button (setzt Suche zurück)
+    \item Produktkarten (klickbar, führen zu Detailansicht)
+    \item PlusCircle-Button (fügt Produkt zur Liste hinzu)
+    \item Filter-Modal mit MultiSelects und Buttons (Reset, Apply)
+\end{itemize}
+
+\subsubsection{User Flow}
+\textbf{Einstieg:} Der Nutzer kommt meist von einem Tab (z.B. "Explore") oder durch Auswahl eines Stores.
+
+\noindent\textbf{Aktionen:} Nutzer kann suchen, filtern, Produkte zur Liste hinzufügen oder Details aufrufen.
+
+\noindent\textbf{Navigation:}
+\begin{itemize}
+    \item Klick auf ein Produkt → Detailansicht (/details/[id])
+    \item Filter anwenden → aktualisierte Produktliste
+    \item Zurück zu anderen Tabs oder Screens jederzeit möglich
+\end{itemize}
+
+\subsection{Technische Perspektive}
+
+\subsubsection{Code-Architektur}
+
+\textbf{Hauptkomponente:} SearchSite (funktionale React-Komponente)
+
+\noindent\textbf{Verwendete Komponenten:}
+\begin{itemize}
+    \item SearchBar (benutzerdefinierte Suchleiste)
+    \item CustomMultiSelect (Filterauswahl)
+    \item SearchCard (Produktkarte)
+    \item ButtonSizeable, ButtonTransparent (Buttons)
+    \item LoadingSpinner (Ladesymbol)
+\end{itemize}
+
+\noindent\textbf{State Management:} React Context (useProductContext) für Produkte und Laden-Status
+
+\noindent\textbf{API:} Zugriff auf Stores und Produkte über api-Service
+
+\subsubsection{Abhängigkeiten}
+
+\textbf{Services:} api (z.B. getStores, addToShoppingList)
+
+\noindent\textbf{State:} Produkte, Stores, Filterauswahl, Suchbegriff, Ladezustand
+
+\noindent\textbf{Libraries:} expo-router, @shopify/flash-list, lucide-react-native (Icons), React Native Komponenten
+
+\subsubsection{Wichtige Funktionen/Methoden}
+\begin{itemize}
+    \item \textbf{handleSearch(query):} Filtert Produkte nach Suchbegriff und sortiert nach Preis.
+    \item \textbf{applyFilters():} Wendet Suchbegriff, Kategorie- und Store-Filter an, sortiert Ergebnis.
+    \item \textbf{fetchStores():} Holt Store-Daten von der API.
+    \item \textbf{useEffect-Hooks:}
+    \begin{itemize}
+        \item Lädt Stores beim Mounten.
+        \item Setzt Store-Filter, wenn ein Store-Name als Parameter übergeben wird.
+        \item Lädt Produkte, falls noch nicht vorhanden.
+        \item Wendet Filter automatisch an, wenn sich die Store-Auswahl ändert.
+    \end{itemize}
+    \item \textbf{renderItem:} Rendert einzelne Produktkarten mit Interaktionsmöglichkeiten.
+\end{itemize}
+
+\subsubsection{Besondere Herausforderungen}
+\begin{itemize}
+    \item \textbf{Filterlogik:} Kombination aus Suchbegriff, Kategorie- und Store-Filter, inklusive Sortierung.
+    \item \textbf{Performance:} Nutzung von FlashList für performantes Rendering großer Produktlisten.
+    \item \textbf{State-Synchronisation:} Automatisches Anwenden von Filtern bei Änderung der Auswahl, Synchronisation mit Context.
+    \item \textbf{UX:} Reset- und Apply-Logik im Filter-Modal, sofortige Rückmeldung bei Suche und Filterung.
+\end{itemize}
+
+\section{UI-Komponenten}
+\label{sec:ui_komponenten}
+
+\subsection{Home(index)}
+
+\subsubsection{ShoppingListItemCard}
+Die Komponente ShoppingListItemCard stellt ein einzelnes Produkt in einer Einkaufsliste als interaktive Karte dar. Sie zeigt Produktinformationen und ermöglicht Swipe-Aktionen.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item Produktdaten wie Name, Marke, Preis, Menge, Einheit, Größe und Bild-URL.
+    \item Optional: onPress für Klickaktionen, hasAButton für einen Aktions-Button, sowie renderRightActions und renderLeftActions für individuelle Swipe-Aktionen.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Die Karte ist abgerundet, hat einen Schatten und zeigt das Produktbild, Name, Marke, Preis und Mengenangaben.
+    \item Das Bild wird links angezeigt, daneben die Produktdetails.
+\end{itemize}
+
+\textbf{Interaktivität:}
+\begin{itemize}
+    \item Die Karte ist mit Swipeable umgeben und unterstützt Swipe-Gesten nach rechts und links.
+    \item Beim Swipen nach rechts kann ein Button oder eine benutzerdefinierte Aktion angezeigt werden.
+    \item Die Karte kann optional per Klick ausgewählt werden.
+\end{itemize}
+
+\textbf{Fehlerbehandlung:}
+\begin{itemize}
+    \item Bildladefehler werden im Log ausgegeben.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} ShoppingListItemCard eignet sich zur Darstellung von Produkten in einer Einkaufsliste mit Swipe- und Klickfunktionen, z.B. zum Löschen, Bearbeiten oder Auswählen eines Artikels. Sie ist flexibel und kann mit verschiedenen Aktionen erweitert werden.
+
+\subsection{Explore}
+
+\subsubsection{CategorieField}
+Die Komponente CategorieField ist ein wiederverwendbares React Native-UI-Element, das eine Kategorie als anklickbares Feld darstellt. Sie nimmt folgende Props entgegen:
+\begin{itemize}
+    \item \textbf{title:} Der Name der Kategorie (wird als Text angezeigt).
+    \item \textbf{image:} Optionales Bild, das dekorativ rechts oben im Feld angezeigt wird.
+    \item \textbf{backgroundColor:} Optionaler Hintergrundfarbwert (Standard: "\#4B946A").
+    \item \textbf{onPress:} Optionaler Callback, der beim Antippen des Feldes ausgeführt wird.
+\end{itemize}
+
+\noindent\textbf{Aufbau:}
+\begin{itemize}
+    \item Das Haupt-Element ist ein Pressable, das das gesamte Feld anklickbar macht.
+    \item Im Feld wird der Titel als weißer, fetter Text oben links angezeigt.
+    \item Falls ein Bild übergeben wird, erscheint es dekorativ rechts oben, leicht gedreht und abgerundet.
+    \item Das Layout nutzt Tailwind-Klassen und Style-Props für responsives und modernes Design.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} Die Komponente eignet sich, um Kategorien in einer Übersicht darzustellen, z.B. in einer Liste oder einem Grid. Sie kann individuell mit Titel, Bild und Farbe angepasst und mit einer Aktion beim Klick versehen werden.
+
+\subsubsection{CategorieGroup}
+Die Komponente CategorieGroup dient dazu, eine Gruppe von Kategorien als übersichtliche, responsive Felder darzustellen. Sie nimmt ein Array von Kategorien entgegen und ordnet diese in Reihen mit jeweils zwei Feldern an. Bei einer ungeraden Anzahl wird das erste Feld einzeln in einer eigenen Reihe angezeigt.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{categories:} Ein Array von Kategorie-Objekten mit Titel, Bild, Hintergrundfarbe und -optionaler Aktion.
+    \item \textbf{onPress:} Optionaler Callback, der beim Klick auf ein Feld ausgeführt wird und die jeweilige Kategorie übergibt.
+\end{itemize}
+
+\textbf{Logik:}
+\begin{itemize}
+    \item Prüft, ob Kategorien vorhanden sind.
+    \item Bei ungerader Anzahl wird das erste Element einzeln angezeigt, die restlichen werden paarweise gruppiert.
+    \item Jede Reihe wird als View mit zwei Feldern (CategorieField) dargestellt. Ist eine Reihe unvollständig, wird der Platz mit einem leeren Feld aufgefüllt.
+\end{itemize}
+
+\textbf{Layout:}
+\begin{itemize}
+    \item Nutzt Flexbox und Tailwind-Klassen für ein modernes, flexibles Design.
+    \item Die Felder sind gleichmäßig verteilt und haben Abstände zwischen den Reihen.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} CategorieGroup eignet sich, um Kategorien in einer übersichtlichen, klickbaren Grid-Ansicht darzustellen, z.B. auf einer Explore-Seite. Die Komponente ist flexibel und kann individuell mit Aktionen und Design-Optionen erweitert werden.
+
+\subsubsection{SearchButton}
+Die Komponente SearchButton ist ein klickbarer Button, der wie ein Suchfeld aussieht, aber kein Eingabefeld ist. Sie zeigt ein Lupen-Icon und einen beschrifteten Text (Standard: "Add Products") an.
+
+\noindent\textbf{Aufbau:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{label:} Optionaler Text, der im Button angezeigt wird.
+    \item \textbf{onPress:} Optionaler Callback, der beim Klick ausgeführt wird.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Ein Pressable mit abgerundeten Ecken, weißem Hintergrund und grauem Rahmen.
+    \item Das Lupen-Icon (Search aus lucide-react-native) steht links neben dem Text.
+    \item Der Button reagiert visuell auf Druck (verringerte Opazität, Android Ripple-Effekt).
+\end{itemize}
+
+\noindent\textbf{Verwendung:} SearchButton eignet sich als auffälliger, interaktiver Button für Such- oder Hinzufügen-Aktionen, z.B. am oberen Rand einer Produktliste. Die Komponente ist einfach anpassbar und kann überall eingesetzt werden, wo ein solcher Button benötigt wird.
+
+\subsection{Search}
+
+\subsubsection{SearchBar}
+Die Komponente SearchBar ist eine interaktive Suchleiste für React Native, die Benutzereingaben entgegennimmt und Suchanfragen auslöst.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{placeholder:} Optionaler Platzhaltertext im Eingabefeld (Standard: "Search...").
+    \item \textbf{onSearch:} Callback, der bei jeder Änderung des Suchbegriffs aufgerufen wird.
+\end{itemize}
+
+\hangindent=2em
+\hangafter=1
+\textbf{Ref-API:}
+Über das ref kann die Methode clear von außen aufgerufen werden, um das Suchfeld zu leeren und die Tastatur zu schließen.
+
+\textbf{Logik:}
+\begin{itemize}
+    \item Die Eingabe wird im State query gespeichert.
+    \item Jede Änderung im Textfeld ruft onSearch mit dem aktuellen Wert auf.
+    \item Ein Klick auf die Leiste fokussiert das Eingabefeld.
+    \item Die Methode clearSearch setzt das Feld zurück und schließt die Tastatur.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Die Suchleiste besteht aus einem weißen, abgerundeten Container mit einem TextInput.
+    \item Das TextInput ist direkt fokussierbar und optisch schlicht gehalten.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} SearchBar eignet sich für Suchfunktionen in Listen oder Übersichten. Sie kann von außen gesteuert werden (z.B. zum Zurücksetzen) und ist flexibel für verschiedene Anwendungsfälle einsetzbar.
+
+\subsubsection{CustomMultiSelect}
+Die Komponente CustomMultiSelect ist ein individuell gestaltetes Mehrfach-Auswahlfeld für React Native, basierend auf react-native-element-dropdown. Sie ermöglicht die Auswahl mehrerer Optionen aus einer Liste und bietet eine Suchfunktion.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{data:} Array von Auswahloptionen mit label und value.
+    \item \textbf{labelField, valueField:} Feldnamen für Anzeige und Wert.
+    \item \textbf{placeholder:} Platzhaltertext im Auswahlfeld.
+    \item \textbf{value:} Array der aktuell ausgewählten Werte.
+    \item \textbf{onChange:} Callback, der bei Änderung der Auswahl ausgelöst wird.
+    \item Diverse Style-Props zur Anpassung des Designs.
+    \item \textbf{search:} Aktiviert die Suchfunktion (Standard: true).
+    \item \textbf{maxHeight:} Maximale Höhe der Dropdown-Liste.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Die Dropdown-Liste zeigt alle Optionen an, ausgewählte werden mit einem Haken-Icon markiert.
+    \item Ausgewählte Items werden als Chips oberhalb der Liste angezeigt, mit Möglichkeit zum Entfernen (×).
+    \item Die Komponente ist optisch anpassbar und nutzt Tailwind-Klassen für modernes Design.
+\end{itemize}
+
+\textbf{Logik:}
+\begin{itemize}
+    \item Die Auswahl und das Entfernen von Items werden über die Props gesteuert.
+    \item Die Suchfunktion filtert die angezeigten Optionen.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} CustomMultiSelect eignet sich für Filter- und Auswahlfunktionen, bei denen mehrere Werte gleichzeitig gewählt werden können, z.B. zur Produktsuche oder Kategoriefilterung. Sie ist flexibel und einfach in verschiedene UI-Kontexte integrierbar.
+
+\subsection{(Produkt-)Details}
+
+\subsubsection{Field}
+Die Komponente Field ist ein flexibler, klickbarer Button für React Native, der ein Icon und optional einen Text anzeigt.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{icon:} Das anzuzeigende Icon (React-Komponente).
+    \item \textbf{text:} Optionaler Text, der neben dem Icon angezeigt wird.
+    \item \textbf{iconColor:} Farbe des Icons (wird über das Icon selbst gesteuert).
+    \item \textbf{backgroundColor:} Hintergrundfarbe des Buttons.
+    \item \textbf{onPress:} Optionaler Callback, der beim Klick ausgeführt wird.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Der Button ist abgerundet, horizontal ausgerichtet und zentriert.
+    \item Das Icon steht links, der Text (falls vorhanden) rechts daneben.
+    \item Der Hintergrund ist individuell anpassbar.
+    \item Die Klick-Animation wird über activeOpacity gesteuert.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} Field eignet sich für verschiedene Interaktionsmöglichkeiten, z.B. als Mengen-Auswahl, Aktions-Button oder für Eingabefelder mit Icon. Das Design ist flexibel und kann mit unterschiedlichen Icons, Farben und Texten verwendet werden.
+
+\subsubsection{QuantityInput}
+Die Komponente QuantityInput ist ein Eingabefeld für Mengenangaben, das Benutzern ermöglicht, eine Zahl durch Plus- und Minus-Buttons zu erhöhen oder zu verringern.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Props:}
+\begin{itemize}
+    \item \textbf{value:} Startwert der Menge (Standard: 1).
+    \item \textbf{onChange:} Callback, der bei jeder Änderung der Menge ausgelöst wird.
+    \item \textbf{min, max:} Minimale und maximale erlaubte Werte (Standard: 1 bis 99).
+\end{itemize}
+
+\textbf{Logik:}
+\begin{itemize}
+    \item Die aktuelle Menge wird im State quantity gehalten.
+    \item Beim Klick auf den Minus-Button wird die Menge um 1 verringert, solange sie über dem Minimum liegt.
+    \item Beim Klick auf den Plus-Button wird die Menge um 1 erhöht, solange sie unter dem Maximum liegt.
+    \item Jede Änderung ruft den onChange-Callback mit dem neuen Wert auf.
+\end{itemize}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Die Komponente besteht aus einer horizontalen Reihe mit Minus-Button, Mengenanzeige und Plus-Button.
+    \item Die Buttons sind rund und heben sich optisch ab, die aktuelle Menge wird mittig angezeigt.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} QuantityInput eignet sich für Produktdetailseiten oder Warenkörbe, wo Nutzer die gewünschte Menge eines Artikels einstellen können. Sie ist intuitiv bedienbar und flexibel einsetzbar.
+
+\subsubsection{ProductLoadingSkeleton}
+Die Komponente ProductLoadingSkeleton zeigt ein Ladeplatzhalter-Layout für Produktdetailseiten an, während die echten Daten geladen werden.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+
+\textbf{Darstellung:}
+\begin{itemize}
+    \item Die Komponente besteht aus mehreren grauen, animierten Rechtecken ("Skeletons"), die die Struktur der später angezeigten Produktinformationen nachahmen.
+    \item Es gibt Platzhalter für das Produktbild, Titel, Varianten, Angebote und einen Button.
+    \item Die Platzhalter sind mit der Klasse animate-pulse versehen, um eine pulsierende Ladeanimation darzustellen.
+\end{itemize}
+
+\textbf{Layout:}
+\begin{itemize}
+    \item Die Elemente sind optisch so angeordnet, wie die echten Produktdetails später erscheinen würden.
+    \item Das Layout ist responsiv und zentriert.
+\end{itemize}
+
+\noindent\textbf{Verwendung:} ProductLoadingSkeleton wird angezeigt, wenn Produktdaten noch nicht geladen sind, um dem Nutzer ein visuelles Feedback zu geben und die Wartezeit angenehmer zu gestalten. Sie verbessert die User Experience durch ein modernes Lade-Design.
 
 \vspace{1em}
 \noindent
