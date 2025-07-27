@@ -325,6 +325,13 @@ Die Komponente basiert auf einem Pressable mit abgerundeten Ecken, weißem Hinte
 
 \noindent\textbf{Verwendung:} SearchButton eignet sich hervorragend als auffälliger, interaktiver Button für Such- oder Hinzufügen-Aktionen, beispielsweise am oberen Rand einer Produktliste. Die Komponente ist einfach anpassbar und kann flexibel überall eingesetzt werden, wo ein solcher funktionaler Button benötigt wird.
 
+\subsubsection{StoreIcons}
+Der Ordner icons innerhalb von categories enthält die grafischen Symbole für verschiedene Supermärkte und Einkaufskategorien, die in der App verwendet werden. Jede Icon-Komponente repräsentiert einen bestimmten Markt, wie zum Beispiel Lidl, Aldi oder Rewe, und liegt als eigene Datei im Ordner vor.
+
+Die Datei index.tsx dient als zentrale Sammelstelle für alle Icons. Sie exportiert die einzelnen Komponenten unter einheitlichen Namen, sodass sie in anderen Teilen der Anwendung unkompliziert und übersichtlich importiert werden können. Das erleichtert die Wiederverwendung und sorgt für eine klare Struktur im Code.
+
+Insgesamt ermöglicht dieser Aufbau, dass die Icons konsistent und effizient im Frontend eingesetzt werden können, zum Beispiel zur Visualisierung von Märkten in Listen oder Übersichten. Die zentrale Exportdatei vereinfacht die Verwaltung und trägt zur besseren Wartbarkeit des Projekts bei.
+
 \subsection{Search}
 
 \subsubsection{SearchBar}
@@ -429,6 +436,23 @@ Die Komponente besteht aus mehreren grauen, animierten Rechtecken (``Skeletons''
 Die Elemente sind optisch so angeordnet, wie die echten Produktdetails später erscheinen werden, was eine nahtlose Transition gewährleistet. Das Layout ist responsiv gestaltet und zentriert ausgerichtet, um auf verschiedenen Bildschirmgrößen optimal zu funktionieren.
 
 \noindent\textbf{Verwendung:} ProductLoadingSkeleton wird angezeigt, wenn Produktdaten noch nicht vollständig geladen sind, um dem Nutzer visuelles Feedback zu geben und die Wartezeit angenehmer zu gestalten. Sie verbessert die User Experience erheblich durch ein modernes Lade-Design, das Transparenz über den Ladezustand schafft und die wahrgenommene Ladezeit reduziert.
+
+\subsection{Generelle UI-Komponenten}
+
+\subsubsection{NavigationBar(TopBar)}
+Die TopBar-Komponente stellt die obere Navigationsleiste der App dar und sorgt für eine konsistente Benutzerführung. Sie nimmt optional einen Titel und die Information entgegen, ob ein Zurück-Button angezeigt werden soll. Ist der Zurück-Button aktiv, kann der Nutzer zur vorherigen Seite zurückkehren. Andernfalls wird das Profilbild des aktuell angemeldeten Nutzers angezeigt, das als Button dient und beim Antippen zu den Einstellungen weiterleitet. Die Komponente verwendet React Native-Elemente für das Layout und Styling sowie Expo Router für die Navigation. Die Benutzerinformationen werden über Clerk eingebunden, sodass das Profilbild dynamisch geladen wird. Das Design ist flexibel und passt sich je nach Kontext an, wodurch die Komponente universell auf verschiedenen Screens eingesetzt werden kann.
+
+\subsubsection{ButtonSquare}
+Die ButtonSquare-Komponente ist ein quadratischer, interaktiver Button, der in der App als Floating Action Button (FAB) fungiert. Er wird in der Regel am unteren rechten Bildschirmrand platziert und hebt sich durch seine Größe und Form von anderen UI-Elementen ab. Der Button kann mit einem Icon versehen werden, das eine spezifische Aktion repräsentiert, wie beispielsweise das Hinzufügen eines neuen Elements oder das Starten einer Suche. Die Komponente nutzt Pressable für die Interaktivität und bietet visuelles Feedback bei Berührung. Sie ist so gestaltet, dass sie sowohl auf iOS als auch auf Android gut aussieht und funktioniert, und kann leicht in verschiedene Screens integriert werden.
+
+\subsubsection{ButtonSizeable}
+Die ButtonSizeable-Komponente ist ein anpassbarer Button, der in der Größe variabel ist und sich somit flexibel in verschiedene Layouts einfügen lässt. Er kann sowohl als runder als auch als quadratischer Button dargestellt werden, je nach den Anforderungen des Designs. Die Größe des Buttons kann über Props gesteuert werden, sodass Entwickler ihn leicht an unterschiedliche Bildschirmgrößen und -auflösungen anpassen können. Die Komponente verwendet ebenfalls Pressable für die Interaktivität und bietet visuelles Feedback bei Berührung. Sie ist so gestaltet, dass sie auf beiden Plattformen, iOS und Android, gut aussieht und funktioniert.
+
+\subsubsection{ButtonTransparent}
+Die ButtonTransparent-Komponente ist ein transparenter, klickbarer Button, der in der App verwendet wird, um Aktionen auszulösen, ohne dabei die darunter liegende UI zu verdecken. Er eignet sich ideal für Situationen, in denen eine subtile Interaktion gewünscht ist, beispielsweise in Overlay- oder Modal-Fenstern. Der Button kann mit einem Icon oder Text versehen werden und nutzt Pressable für die Interaktivität. Durch seine Transparenz fügt er sich harmonisch in das Design ein und ermöglicht es dem Nutzer, Aktionen auszuführen, ohne die visuelle Klarheit der App zu beeinträchtigen.
+
+\subsubsection{ButtonRound}
+Die ButtonRound-Komponente ist ein runder, interaktiver Button, der in der App verwendet wird, um Aktionen auszulösen. Er eignet sich besonders gut für Situationen, in denen ein auffälliges, zentrales Element benötigt wird, beispielsweise für das Starten einer neuen Aktion oder das Hinzufügen eines neuen Elements. Der Button kann mit einem Icon oder Text versehen werden und nutzt Pressable für die Interaktivität. Durch seine runde Form hebt er sich von anderen UI-Elementen ab und zieht die Aufmerksamkeit des Nutzers auf sich.
 
 \vspace{1em}
 \noindent
