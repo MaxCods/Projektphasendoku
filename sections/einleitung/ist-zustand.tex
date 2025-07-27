@@ -1,2 +1,35 @@
 \section{Ist-Zustand}
-Nikolas Keller \authormark{NK}
+ \authormark{NK}
+
+Die Smart Shopping App befindet sich aktuell in einem funktionsfähigen Prototyp-Status, bei dem alle wesentlichen Kernfunktionalitäten implementiert und miteinander verknüpft sind. Die Anwendung ermöglicht bereits heute einen vollständigen Workflow vom Produktvergleich bis zur fertigen Einkaufsliste.
+
+\subsection{Aktueller Nutzer-Workflow}
+
+\subsubsection{Anmeldung und erste Schritte}
+Der Nutzer startet die App und meldet sich über das Clerk-Authentifizierungssystem an. Nach erfolgreicher Authentifizierung landet er auf dem Home-Screen, welcher als zentrale Übersicht seiner aktuellen Einkaufsliste fungiert. Falls noch keine Liste existiert, kann er über den \enquote{Create Shopping List}-Button eine neue Liste anlegen.
+
+\subsubsection{Produktsuche und -auswahl}
+Vom Home-Screen aus navigiert der Nutzer zum Explore-Screen, der verschiedene Einstiegspunkte zur Produktsuche bietet. Er kann entweder über den \enquote{Add Products}-Button direkt zur Suche gelangen oder über Kategorien und Stores gezielt filtern. Im Search-Screen steht ihm eine Textsuche mit Filtermöglichkeiten zur Verfügung. Gefundene Produkte werden als Karten dargestellt, die er direkt über den PlusCircle-Button zur Einkaufsliste hinzufügen kann.
+
+\subsubsection{Listenverwaltung}
+Zurück auf dem Home-Screen sieht der Nutzer seine zusammengestellte Einkaufsliste mit allen hinzugefügten Produkten. Jedes Produkt wird als Karte mit Name, Marke, Menge, Preis und Bild angezeigt. Er kann Produkte über den Lösch-Button entfernen oder die gesamte Liste archivieren. Ein Floating View zeigt kontinuierlich den Gesamtpreis seiner aktuellen Liste an.
+
+\subsubsection{Archiv und Verlauf}
+Über die Tab-Navigation kann der Nutzer zu seinem Archiv wechseln, wo alle seine abgeschlossenen Einkaufslisten gespeichert sind. Diese sind rein lesend und dienen der Dokumentation vergangener Einkäufe.
+
+\subsection{Technischer Stand der Implementierung}
+
+\subsubsection{Frontend (React Native)}
+Das mobile Frontend basiert auf React Native mit Expo Router und bietet eine vollständig funktionsfähige Benutzeroberfläche. Alle wichtigen Screens sind implementiert: Home-Screen für die Listenübersicht, Explore-Screen für Kategorien und Stores, Search-Screen für die Produktsuche, und Archive-Screens für den Einkaufsverlauf. Die Navigation erfolgt über Bottom Tabs und Stack-Navigation.
+
+\subsubsection{Backend (Express.js/TypeScript)}
+Das Backend stellt eine vollständige REST-API bereit, die alle CRUD-Operationen für Einkaufslisten, Produktvarianten und Nutzerarchive unterstützt. Die Authentifizierung läuft über Clerk mit Bearer-Token-Validation. Das System folgt dem Controller-Service-Pattern und nutzt Prisma als ORM für Datenbankzugriffe.
+
+\subsubsection{Datenerfassung und -aufbereitung}
+Ein zweistufiges Scraping-System erfasst Produktdaten von Aldi Nord, Aldi Süd und Netto sowie Angebotsdaten von Marktguru für eine breitere Händlerauswahl. Die Daten werden normalisiert, angereichert und in einer PostgreSQL-Datenbank gespeichert, die marktübergreifende Preisvergleiche ermöglicht.
+
+\subsection{Aktuelle Limitierungen}
+
+Trotz der funktionsfähigen Grundarchitektur bestehen noch einige Einschränkungen. Die Produktdatenerfassung ist auf drei Händler (Aldi Nord/Süd, Netto) für Grundpreise begrenzt, während Angebotsdaten über Marktguru von mehr Märkten verfügbar sind. Der intelligente Marktvergleich zur Ermittlung des günstigsten Supermarkts für die gesamte Einkaufsliste ist noch nicht vollständig implementiert. Außerdem fehlen erweiterte Features wie Barcode-Scanner oder ortsbasierte Marktempfehlungen.
+
+Der aktuelle Stand ermöglicht es Nutzern bereits, ihre Einkaufslisten digital zu verwalten und Preise einzelner Produkte zu vergleichen, wobei die App eine solide Basis für die geplanten Weiterentwicklungen darstellt.
