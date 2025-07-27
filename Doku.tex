@@ -333,6 +333,7 @@ In der zweiten Stufe kommen die Enricher-Skripte (z.B. \texttt{aldi\_nord\_enric
 Der Enricher erledigt folgende Aufgaben:
 \begin{enumerate}
     \item \textbf{Aufruf der Produkt-URL:} Für jedes Produkt wird die Detailseiten-URL aufgerufen, meist mit der schnelleren `requests`-Bibliothek, da diese Seiten oft statischer sind.
+    \item \textbf{Übergabe des HTML-Codes an BeautifulSoup:} Der HTML-Code der Produktseite wird an BeautifulSoup übergeben, um die zusätzlichen Informationen zu extrahieren.
     \item \textbf{Extraktion von Detailinformationen:} Von der Produktseite werden zusätzliche Daten gesammelt:
         \begin{itemize}
             \item \textbf{Markenname}
