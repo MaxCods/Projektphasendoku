@@ -7,41 +7,47 @@
 \label{chap:integration}
 
 \section{Überblick der Client–Server-Kommunikation}
-Die Kommunikation zwischen dem mobilen Frontend und dem Express‑Backend erfolgt über eine REST‑API, die im Frontend durch einen zentralen \texttt{ApiService} gekapselt wird. Dieser nutzt Axios, um HTTP‑Requests an das Backend zu senden und Authentifizierungs­token automatisch in die Header einzufügen.
+Die Kommunikation zwischen dem mobilen Frontend und dem Express‑Backend erfolgt über eine REST‑API, die im Frontend durch einen zentralen \texttt{ApiService} gekapselt wird. Dieser verwendet \texttt{Axios}, um HTTP‑Requests an das Backend zu senden und dabei automatisch das Authentifizierungs‑Token in die HTTP‑Header einzufügen.
 
 \subsection{ApiService im Frontend}
-Im Frontend definiert \texttt{api.ts} die \texttt{ApiService}-Klasse mit Methoden für alle CRUD‑Operationen der Einkaufslisten. Ein exemplarischer Ausschnitt:
+Im Frontend ist die \texttt{ApiService}-Klasse in \texttt{api.ts} definiert. Diese Klasse stellt Methoden für alle CRUD‑Operationen (Create, Read, Update, Delete) der Einkaufslisten bereit. 
+
+Ein typisches Beispiel ist die folgende Methode zur Erstellung einer neuen Einkaufsliste:
 
 \begin{lstlisting}[language=TypeScript,caption={Definition der \texttt{createShoppingList}-Methode im \texttt{ApiService}}]
 public async createShoppingList(): Promise<ShoppingListItem[]> {
-const response = await this.axiosInstance.post("/shoppinglist/");
-return response.data || [];
+  const response = await this.axiosInstance.post("/shoppinglist/");
+  return response.data || [];
 }
 \end{lstlisting}
 
-In der React‑Komponente \texttt{ListScreen.tsx} wird diese Methode wie folgt genutzt:
+Hier wird über die Methode \texttt{axiosInstance.post()} ein \texttt{POST}-Request an den Endpunkt \texttt{/shoppinglist/} geschickt. Die Methode ist asynchron und gibt ein \texttt{Promise} mit den zurückgelieferten \texttt{ShoppingListItem}-Objekten zurück. Sollte der Server keine Daten zurücksenden, wird stattdessen ein leeres Array zurückgegeben. Die Nutzung einer dedizierten Instanz von Axios (\texttt{axiosInstance}) ermöglicht es, wiederkehrende Konfigurationen wie Basis-URLs oder Authentifizierungs‑Header zentral zu verwalten.
+
+Die Nutzung dieser Methode im Frontend ist in der React‑Komponente \texttt{ListScreen.tsx} zu sehen:
 
 \begin{lstlisting}[language=TypeScript,caption={Aufruf von \texttt{createShoppingList} im Frontend}]
 const handleCreateShoppingList = async () => {
-setIsCreatingList(true);
-try {
-const apiResponse = await api.createShoppingList();
-setShoppingList(apiResponse);
-setHasShoppingList(true);
-Alert.alert("Success", "Shopping list created successfully!");
-} catch {
-Alert.alert("Error", "Could not create shopping list");
-} finally {
-setIsCreatingList(false);
-}
+  setIsCreatingList(true);
+  try {
+    const apiResponse = await api.createShoppingList();
+    setShoppingList(apiResponse);
+    setHasShoppingList(true);
+    Alert.alert("Success", "Shopping list created successfully!");
+  } catch {
+    Alert.alert("Error", "Could not create shopping list");
+  } finally {
+    setIsCreatingList(false);
+  }
 };
 \end{lstlisting}
 
+Diese Funktion ist als \texttt{async} deklariert, da sie auf den asynchronen API-Aufruf wartet. Zunächst wird der State \texttt{isCreatingList} auf \texttt{true} gesetzt, um dem Benutzer visuell anzuzeigen, dass eine Anfrage läuft (beispielsweise durch einen Ladeindikator). Anschließend wird \texttt{api.createShoppingList()} aufgerufen, um die neue Liste zu erstellen. Das Ergebnis (\texttt{apiResponse}) wird im State \texttt{shoppingList} gespeichert und mit \texttt{setHasShoppingList(true)} signalisiert, dass nun eine Liste existiert. Fehler werden über einen \texttt{catch}-Block abgefangen, der eine Fehlermeldung ausgibt, während \texttt{finally} sicherstellt, dass der Ladezustand am Ende wieder zurückgesetzt wird.
+
 \section{Backend‑Implementierung der Endpunkte}
-Das Backend exponiert unter \texttt{/api/shoppinglist} eine Reihe von Endpunkten, die in \texttt{shoppingLists.ts} (Router) und \texttt{shoppingListsController.ts} (Controller) definiert sind.
+Das Backend stellt unter \texttt{/api/shoppinglist} eine REST‑Schnittstelle bereit. Diese ist in zwei Ebenen aufgeteilt: dem \emph{Router}, der die Routen definiert, und dem \emph{Controller}, der die Geschäftslogik ausführt.
 
 \subsection{Router‑Definition}
-Der Einkaufslisten‑Router hierzu:
+Die Routing-Definition für die Einkaufslisten befindet sich in \texttt{shoppingLists.ts}:
 
 \begin{lstlisting}[language=TypeScript,caption={Routing des Einkaufslisten‑Endpoints im Backend (\texttt{shoppingLists.ts})}]
 import { Router } from "express";
@@ -59,8 +65,10 @@ router.get("/items", asyncHandler(getShoppingListItems));
 export default router;
 \end{lstlisting}
 
+Hier wird eine neue Router-Instanz von Express erstellt, die alle Routen im Kontext der Einkaufslisten verwaltet. Über \texttt{router.post("/")} wird ein Endpunkt zum Erstellen einer neuen Liste registriert, während \texttt{router.get("/items")} einen Endpunkt für das Abrufen von Listeneinträgen bereitstellt. Die Hilfsfunktion \texttt{asyncHandler} dient dazu, Fehler aus asynchronen Funktionen automatisch an die Express-Fehlerbehandlung weiterzuleiten, ohne dass explizite \texttt{try-catch}-Blöcke in den Routen notwendig sind.
+
 \subsection{Controller‑Logik}
-Im Controller werden die Anfragen authentifiziert und an den Service weitergeleitet:
+Die eigentliche Geschäftslogik, wie die Authentifizierung und die Verarbeitung der Anfrage, wird im Controller \texttt{shoppingListsController.ts} definiert:
 
 \begin{lstlisting}[language=TypeScript,caption={Erstellen eines Einkaufslisten‑Eintrags im Backend (\texttt{shoppingListsController.ts})}]
 import { Request, Response } from "express";
@@ -68,23 +76,26 @@ import { getAuth } from "@clerk/express";
 import * as service from "@/services/shoppingListsService";
 
 export const createShoppingList = async (
-req: Request,
-res: Response
+  req: Request,
+  res: Response
 ) => {
-const { userId } = getAuth(req);
-const shoppingList = await service.createShoppingList(
-"Default List",
-userId as string
-);
-res.json(shoppingList);
+  const { userId } = getAuth(req);
+  const shoppingList = await service.createShoppingList(
+    "Default List",
+    userId as string
+  );
+  res.json(shoppingList);
 };
 \end{lstlisting}
 
+Die Funktion \texttt{createShoppingList} extrahiert zunächst die \texttt{userId} des authentifizierten Benutzers aus der Anfrage, indem sie \texttt{getAuth(req)} aufruft. Anschließend wird der Service \texttt{shoppingListsService} genutzt, um für diesen Benutzer eine neue Liste mit dem Standardnamen „Default List“ anzulegen. Zum Schluss wird die erstellte Liste als JSON-Antwort an das Frontend zurückgesendet. Durch diese klare Trennung von Controller- und Service-Logik bleibt der Code modular und leichter wartbar.
+
 \section{Datenfluss im Anwendungsfall „Liste laden“}
+Der Ablauf zum Laden einer Liste gestaltet sich wie folgt:
 \begin{enumerate}
-\item \textbf{Initialisierung}: Beim Fokussieren der \texttt{ListScreen}-Komponente ruft \texttt{loadList()} die Methoden \texttt{api.checkShoppingListExists()} und \texttt{api.getShoppingListItems()} auf.
-\item \textbf{HTTP‑Requests}: Axios sendet einen \texttt{GET /shoppinglist} bzw. \texttt{GET /shoppinglist/items} Request inklusive Bearer‑Token.
-\item \textbf{Backend‑Authentifizierung}: Der Express‑Middleware \texttt{getAuth(req)} extrahiert das Clerk‑Token und identifiziert den Benutzer.
-\item \textbf{Service‑Aufruf}: Die Controller‑Funktion holt die Liste aus der Datenbank über \texttt{shoppingListsService.getShoppingListItems(userId)}.
-\item \textbf{Antwort an Frontend}: Der Controller serialisiert das Ergebnis als JSON, welches vom Frontend direkt in den State übernommen wird.
+  \item \textbf{Initialisierung}: Sobald die \texttt{ListScreen}-Komponente im Frontend in den Fokus rückt, ruft die Funktion \texttt{loadList()} die Methoden \texttt{api.checkShoppingListExists()} und \texttt{api.getShoppingListItems()} auf, um den aktuellen Zustand zu ermitteln.
+  \item \textbf{HTTP‑Requests}: Über Axios werden zwei Anfragen gesendet: \texttt{GET /shoppinglist} und \texttt{GET /shoppinglist/items}. Beide Requests enthalten das Authentifizierungs-Token im \texttt{Authorization}-Header.
+  \item \textbf{Backend‑Authentifizierung}: Auf der Serverseite wird das Token durch \texttt{getAuth(req)} validiert und der entsprechende Benutzer identifiziert.
+  \item \textbf{Service‑Aufruf}: Der Controller greift auf \texttt{shoppingListsService.getShoppingListItems(userId)} zu, um die Daten aus der Datenbank abzurufen.
+  \item \textbf{Antwort an das Frontend}: Die abgerufenen Daten werden als JSON an das Frontend zurückgesendet, wo sie direkt in den React-State übernommen werden.
 \end{enumerate}
