@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ARCHIVE-SCREENS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Archivfunktion und Detailansicht}
+\renewcommand{\authorinitials}{FK}
+
+\section{Nutzerperspektive}
+
+Die Archivansicht dient dazu, dem Nutzer einen Überblick über vergangene, abgeschlossene Einkaufslisten zu geben. Sie ermöglicht es, vergangene Listen anzusehen und bei Bedarf dauerhaft zu löschen. In der Detailansicht kann der Nutzer die vollständigen Inhalte einer archivierten Liste einsehen, wobei eine Bearbeitung bewusst nicht vorgesehen ist.
+
+In der Archivübersicht werden alle Listen als Karten (\,\texttt{Card}\,) dargestellt. Jede dieser Karten zeigt das Datum und die Uhrzeit der jeweiligen Liste sowie sämtliche enthaltenen Produkte inklusive Menge, Einheit und Preis. Auf der rechten Seite befindet sich ein rotes Mülleimer-Icon, über das sich der entsprechende Eintrag löschen lässt.
+
+Ein Tippen auf einen Eintrag führt den Nutzer zur Detailansicht. Dort sieht er den Namen der Liste (also das Erstellungsdatum) als Überschrift sowie alle enthaltenen Produkte erneut in Form von \texttt{Cards}. Diese Seite ist rein lesend gestaltet – eine Editierung ist hier bewusst ausgeschlossen, um die Dokumentationsfunktion zu betonen und versehentliche Änderungen zu verhindern.
+
+Der typische User Flow beginnt in der Regel auf der Startseite oder im Settings-Bereich, von wo aus der Nutzer über den Bottom Tab \enquote{Archive} zur Archivübersicht gelangt. Von dort kann er einzelne Listen antippen, um Details zu sehen. Die Rücknavigation erfolgt entweder über die native Systemnavigation oder über einen integrierten Zurück-Button in der \texttt{TopBar}.
+
+\section{Technische Perspektive}
+
+Die technische Umsetzung basiert auf der Stack-Navigation des \texttt{Expo Router}. Der \texttt{ArchiveScreen} ist für das Laden und Löschen der archivierten Listen verantwortlich, während der \texttt{ArchiveDetail}-Screen auf Basis einer ID aus der URL die Inhalte einer spezifischen Liste anzeigt.
+
+Mehrere Komponenten werden wiederverwendet, darunter eine \texttt{TopBar} mit Überschrift und optionalem Zurück-Button, eine \texttt{Card}-Komponente für die Produktanzeige und ein \texttt{LoadingSpinner} zur Anzeige von Ladezuständen.
+
+Die State-Verwaltung erfolgt lokal über \texttt{useState}. Die Daten für archivierte Listen werden über das API-Modul geladen – konkret über den Aufruf \texttt{api.getArchivedShoppingLists()}. Beim Initialisieren des Screens sorgt ein \texttt{useEffect}-Hook für das Abrufen der Daten.
+
+Das Löschen einer Liste wird durch die Funktion \texttt{handleDelete(id)} realisiert, welche einen API-Call auslöst und das Element anschließend aus dem lokalen Zustand entfernt. Für die Detailansicht filtert \texttt{loadDetail()} anhand der URL-ID die korrekte Liste heraus.
+
+Ein besonderer technischer Aspekt ist die saubere Synchronisation zwischen API-Datenmodell und lokalem State bei Löschvorgängen. Zudem fehlt derzeit ein explizites Fehlerfeedback an den Nutzer, sollte ein API-Call scheitern – hier wäre eine Verbesserung denkbar. Der Ladezustand wird durch einen eigenen \texttt{LoadingSpinner} angezeigt, um leere Bildschirme zu vermeiden.
+
+Die beiden Screens sind absichtlich funktional reduziert und visuell klar gehalten, um den Fokus auf die reine Informationsanzeige zu legen.

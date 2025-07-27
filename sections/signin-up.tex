@@ -1,0 +1,32 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LOGIN & SIGN-UP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Login- und Registrierungsfunktion}
+\renewcommand{\authorinitials}{FK}
+
+\section{Nutzerperspektive}
+
+Die Login- und Registrierungsseiten ermöglichen einen klar geführten Einstieg in die App – sowohl über moderne Single-Sign-On-Methoden (Google, Apple) als auch über die klassische Kombination aus E-Mail und Passwort. Unabhängig vom gewählten Weg erfolgt die gesamte Authentifizierung über den integrierten Dienst \texttt{Clerk}, der eine sichere Verwaltung aller Nutzerdaten übernimmt.
+
+Beim Sign-Up gibt der Nutzer zunächst seinen Namen, seine E-Mail-Adresse und ein Passwort an. Danach wird automatisch ein Verifizierungscode per E-Mail versendet, der zur Aktivierung des Kontos eingegeben werden muss. Erst nach erfolgreicher Verifikation wird der Zugang freigeschaltet.
+
+Auch der Login mit E-Mail und Passwort ist vollständig implementiert – inklusive Sessionhandling und sicherem Redirect zur Startseite nach erfolgreicher Anmeldung. Alternativ kann sich der Nutzer direkt per Google- oder Apple-Konto authentifizieren. Die entsprechenden Optionen sind prominent und visuell getrennt dargestellt, was für Klarheit sorgt.
+
+Die gesamte Nutzeroberfläche ist durchgängig strukturiert – mit Icons zur Passwortanzeige, deutlicher Trennung der Authentifizierungsarten und flüssiger Navigation zwischen Anmelde- und Registrierungsprozess. Egal ob klassisch oder via SSO – nach erfolgreichem Login landet der Nutzer direkt auf der Startseite der App.
+
+\section{Technische Perspektive}
+
+Die technische Architektur basiert auf klassischen \texttt{React Native}-Komponenten wie \texttt{KeyboardAvoidingView}, \texttt{ScrollView}, \texttt{TextInput} und \texttt{TouchableOpacity}, ergänzt durch \texttt{Ionicons} für visuelles Feedback. Als Authentifizierungsdienst kommt \texttt{Clerk} zum Einsatz – über Hooks wie \texttt{useSignIn}, \texttt{useSignUp} und \texttt{useSSO}. Für OAuth werden \texttt{expo-auth-session} und \texttt{WebBrowser} verwendet.
+
+Die Zustände werden lokal mit \texttt{useState}, \texttt{useEffect} und \texttt{useCallback} verwaltet. Die wichtigsten Funktionen sind:
+
+\begin{itemize}
+    \item \texttt{onSignInPress()} – für den klassischen Login mit E-Mail/Passwort
+    \item \texttt{onSignUpPress()} – für die Registrierung inkl. Start der E-Mail-Verifikation
+    \item \texttt{onVerifyPress()} – zur Eingabe und Prüfung des E-Mail-Codes
+    \item \texttt{onGooglePress()}, \texttt{onApplePress()} – starten den jeweiligen OAuth-Flow
+    \item \texttt{useWarmUpBrowser()} – initialisiert den Webbrowser vorab zur Beschleunigung des OAuth-Flows
+\end{itemize}
+
+Herausfordernd ist die saubere Trennung der Logik für die beiden Authentifizierungswege (klassisch vs. OAuth) sowie die Absicherung gegen unvollständige Eingaben. Auch das Sessionhandling und das asynchrone Verhalten müssen korrekt auf den UI-State abgebildet werden. Die Eingabefelder wurden zudem so integriert, dass sie insbesondere auf iOS gerätefreundlich mit der Tastatur interagieren.
+
