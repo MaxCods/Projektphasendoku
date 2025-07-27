@@ -7,7 +7,7 @@
 
 \section{Backend-Aufbau und Signalverarbeitung}
 
-Das Backend der Smart Shopping App basiert auf einer modernen Express.js-Architektur mit TypeScript und folgt dem bewährten Controller-Service-Pattern. Die Anwendung ist in mehrere Schichten unterteilt, um eine klare Trennung der Verantwortlichkeiten zu gewährleisten.
+Das Backend der Smart Shopping App basiert wie bereits erähnt auf einer modernen Express.js-Architektur mit TypeScript und folgt dem bewährten Controller-Service-Pattern. Die Anwendung ist in mehrere Schichten unterteilt, um eine klare Trennung der Verantwortlichkeiten zu gewährleisten.
 
 \subsection{Express.js App-Struktur}
 
@@ -71,7 +71,7 @@ export const requireAuth = () => (
 };
 \end{lstlisting}
 
-Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token, die dann in Controllern für user-spezifische Operationen verwendet wird.
+Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token (JSON Web Token), die dann in Controllern für user-spezifische Operationen verwendet wird.
 
 \subsection{Error Handling und Middleware}
 
@@ -153,30 +153,26 @@ Controller sind für Request/Response-Handling zuständig, während Services die
 
 \subsection{API-Dokumentation}
 
-\subsubsection{Shopping List Endpoints}
+Alle API-Endpunkte erfordern Authentifizierung über einen Bearer Token im Authorization-Header. Im folgenden Teil werden die API-Requests aufgezählt und kurz beschrieben:
 
-\textbf{POST /api/shoppinglist/}
-\begin{itemize}
-    \item \textbf{Description:} Erstellt eine neue Einkaufsliste für den authentifizierten Benutzer
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Request Body:} Keine
-    \item \textbf{Response:} 
-    \begin{lstlisting}[language=JSON]
+\subsubsection{\texttt{POST /api/shoppinglist/}}
+
+Erstellt eine neue Einkaufsliste für den authentifizierten Benutzer. Es ist kein Request Body erforderlich. Die Antwort enthält die erstellte Einkaufsliste mit ID, Name, User-ID und Erstellungszeitstempel.
+
+\begin{lstlisting}[language=JSON]
 {
   "id": 1,
   "name": "Default List",
   "userId": "user_123",
   "createdAt": "2024-01-15T10:30:00Z"
 }
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\textbf{GET /api/shoppinglist/}
-\begin{itemize}
-    \item \textbf{Description:} Ruft die aktuelle Einkaufsliste des Benutzers ab
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Response:} 
-    \begin{lstlisting}[language=JSON]
+\subsubsection{\texttt{GET /api/shoppinglist/}}
+
+Ruft die aktuelle Einkaufsliste des Benutzers ab. Die Antwort enthält die Einkaufsliste mit allen enthaltenen Items, einschließlich Produktdetails und Markeninformationen.
+
+\begin{lstlisting}[language=JSON]
 {
   "id": 1,
   "name": "Default List",
@@ -186,49 +182,46 @@ Controller sind für Request/Response-Handling zuständig, während Services die
       "variantId": 5,
       "quantity": 2,
       "variant": {
+        "id": 2,
+        "size": 1,
+        "unit": "stueck",
         "product": {
+          "id": 3,
           "name": "Bio Milch",
-          "brand": { "name": "GUT BIO" }
+          "brandId": 4
         }
       }
     }
   ]
 }
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\textbf{PUT /api/shoppinglist/}
-\begin{itemize}
-    \item \textbf{Description:} Fügt ein Produkt zur Einkaufsliste hinzu
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Request Body:}
-    \begin{lstlisting}[language=JSON]
+\subsubsection{\texttt{PUT /api/shoppinglist/}}
+
+Fügt ein Produkt zur Einkaufsliste hinzu. Der Request Body muss die Varianten-ID und die gewünschte Menge enthalten. Die Antwort enthält die aktualisierte Einkaufsliste.
+
+\begin{lstlisting}[language=JSON]
 {
   "variantId": 5,
   "quantity": 2
 }
-    \end{lstlisting}
-    \item \textbf{Response:} Aktualisierte Einkaufsliste
-\end{itemize}
+\end{lstlisting}
 
-\textbf{DELETE /api/shoppinglist/}
-\begin{itemize}
-    \item \textbf{Description:} Entfernt ein Produkt aus der Einkaufsliste
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Request Body:}
-    \begin{lstlisting}[language=JSON]
+\subsubsection{\texttt{DELETE /api/shoppinglist/}}
+
+Entfernt ein Produkt aus der Einkaufsliste. Der Request Body muss die Varianten-ID des zu entfernenden Produkts enthalten.
+
+\begin{lstlisting}[language=JSON]
 {
   "variantId": 5
 }
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\textbf{GET /api/shoppinglist/items}
-\begin{itemize}
-    \item \textbf{Description:} Ruft alle Einkaufslisten-Items mit Produktdetails ab
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Response:}
-    \begin{lstlisting}[language=JSON]
+\subsubsection{\texttt{GET /api/shoppinglist/items}}
+
+Ruft alle Einkaufslisten-Items mit detaillierten Produktinformationen ab. Die Antwort enthält eine Liste aller Items mit vollständigen Produktdetails wie Größe, Einheit, Name, Preis, Store-Name, Marken-Name und Bild-URL.
+
+\begin{lstlisting}[language=JSON]
 [
   {
     "id": 1,
@@ -243,25 +236,13 @@ Controller sind für Request/Response-Handling zuständig, während Services die
     "imageUrl": "https://example.com/milk.jpg"
   }
 ]
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\subsubsection{Products Endpoints}
+\subsubsection{\texttt{GET /api/products}}
 
-\textbf{GET /api/products}
-\begin{itemize}
-    \item \textbf{Description:} Ruft Produkte mit optionalen Filtern ab
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Query Parameters:}
-    \begin{itemize}
-        \item \texttt{search}: Suchbegriff für Produktname
-        \item \texttt{category}: Kategorie-Filter
-        \item \texttt{store}: Store-Filter
-        \item \texttt{limit}: Maximale Anzahl Ergebnisse (Default: 50)
-        \item \texttt{offset}: Offset für Pagination
-    \end{itemize}
-    \item \textbf{Response:}
-    \begin{lstlisting}[language=JSON]
+Ruft Produkte mit optionalen Filtern ab. Als Query-Parameter können Suchbegriff, Kategorie, Store, Limit und Offset für Pagination übergeben werden. Die Antwort enthält eine Liste von Produkten mit Markeninformationen, Varianten und Store-Angeboten sowie Metadaten für Pagination.
+
+\begin{lstlisting}[language=JSON]
 {
   "products": [
     {
@@ -287,17 +268,13 @@ Controller sind für Request/Response-Handling zuständig, während Services die
   "limit": 50,
   "offset": 0
 }
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\subsubsection{Stores Endpoints}
+\subsubsection{\texttt{GET /api/stores}}
 
-\textbf{GET /api/stores}
-\begin{itemize}
-    \item \textbf{Description:} Ruft alle verfügbaren Stores ab
-    \item \textbf{Authentication:} Required (Bearer Token)
-    \item \textbf{Response:}
-    \begin{lstlisting}[language=JSON]
+Ruft alle verfügbaren Stores ab. Die Antwort enthält eine Liste aller Stores mit ID, Name und zugehöriger Farbe für die UI-Darstellung.
+
+\begin{lstlisting}[language=JSON]
 [
   {
     "id": 1,
@@ -310,24 +287,21 @@ Controller sind für Request/Response-Handling zuständig, während Services die
     "color": "#E74C3C"
   }
 ]
-    \end{lstlisting}
-\end{itemize}
+\end{lstlisting}
 
-\section{Datenbankintegration}
+\section{Datenbankinteraktionen}
+
+Der Aufbau der Datenbank wird im nächsten Kapitel erklärt. Hier werden die Interaktionen mit ihr beschrieben.
 
 \subsection{Prisma ORM und Datenbankzugriff}
 
-Das Backend nutzt Prisma als TypeScript-first ORM für typsichere Datenbankoperationen. Die Datenbankverbindung wird über einen zentralen Client verwaltet:
-
-\begin{lstlisting}[style=typescriptstyle,caption={Datenbankverbindung}]
-import { PrismaClient } from "@prisma/client";
-
-export const db = new PrismaClient();
-\end{lstlisting}
+Das Backend nutzt Prisma als TypeScript-first ORM für typsichere Datenbankoperationen. Die Datenbankverbindung wird über einen zentralen Client verwaltet. Die Implementierung erfolgt durch den Import des \texttt{PrismaClient} aus dem \texttt{@prisma/client} Paket und die Erstellung einer Instanz mit \texttt{export const db = new PrismaClient()}. Dieser Client wird dann in allen Service-Layer-Komponenten verwendet, um Datenbankoperationen durchzuführen. Der PrismaClient übernimmt automatisch das Connection Pooling und stellt sicher, dass alle Datenbankverbindungen effizient verwaltet werden.
 
 \subsection{Service-Layer und Business Logic}
 
-Services implementieren die Business Logic und abstrahieren komplexe Datenbankoperationen. Ein typisches Beispiel ist der ShoppingListService:
+Services implementieren die Business Logic und abstrahieren komplexe Datenbankoperationen. Ein großer Vorteil von Prisma ist, dass keine SQL-Syntax benötigt wird - die Abfragen sind bereits sehr einfach und intuitiv. Zusätzlich können problemlos andere Tabellen in einem Request integriert werden, was komplexe Joins überflüssig macht.
+
+Der Grundaufbau einer Service-Methode folgt einem klaren Muster: Zuerst erfolgt die Datenbankabfrage mit Prisma, dann die Validierung der Ergebnisse, anschließend die Business Logic (wie Aggregationen oder Transformationen) und schließlich die Rückgabe der aufbereiteten Daten. Ein typisches Beispiel ist der ShoppingListService:
 
 \begin{lstlisting}[style=typescriptstyle,caption={Service-Layer Beispiel}]
 export const getShoppingListItems = async (userId: string) => {
@@ -338,16 +312,8 @@ export const getShoppingListItems = async (userId: string) => {
         include: {
           variant: {
             include: {
-              product: {
-                include: {
-                  brand: true,
-                },
-              },
-              storeOffers: {
-                include: {
-                  store: true,
-                },
-              },
+              product: { include: { brand: true } },
+              storeOffers: { include: { store: true } },
               images: true,
             },
           },
@@ -356,23 +322,18 @@ export const getShoppingListItems = async (userId: string) => {
     },
   });
 
-  if (!shoppingList) {
-    return null;
-  }
+  if (!shoppingList) return null;
 
-  // Aggregation von Duplikaten
-  const shopitems = shoppingList.items.reduce(
-    (acc: typeof shoppingList.items, item) => {
-      const existingItem = acc.find((i) => i.variantId === item.variantId);
-      if (existingItem) {
-        existingItem.quantity = existingItem.quantity + item.quantity;
-      } else {
-        acc.push(item);
-      }
-      return acc;
-    },
-    [] as typeof shoppingList.items
-  );
+  // Business Logic: Aggregation von Duplikaten
+  const shopitems = shoppingList.items.reduce((acc, item) => {
+    const existingItem = acc.find((i) => i.variantId === item.variantId);
+    if (existingItem) {
+      existingItem.quantity += item.quantity;
+    } else {
+      acc.push(item);
+    }
+    return acc;
+  }, []);
 
   return shopitems.map((item) => ({
     id: item.variant?.product?.id,
@@ -389,101 +350,29 @@ export const getShoppingListItems = async (userId: string) => {
 };
 \end{lstlisting}
 
-\subsection{Transaktionsmanagement}
-
-Für kritische Operationen werden Datenbanktransaktionen verwendet, um Datenkonsistenz zu gewährleisten.
-
-\subsection{Datenbankschema}
-
-% TODO: Datenbankschema-Beschreibung hier einfügen
-
 \section{Performance und Skalierung}
 
-\subsection{Optimierungen}
+Das Backend implementiert bereits einige \textbf{Performance-Optimierungen}. Prisma's \texttt{include}-Funktionalität ermöglicht das schon kurz erwähnte \textbf{Eager Loading}, wodurch verwandte Daten in einer einzigen Abfrage geladen werden können. Dies reduziert die Anzahl der Datenbankzugriffe erheblich. Zusätzlich übernimmt Prisma automatisch das \textbf{Connection Pooling} und verwaltet die Datenbankverbindungen effizient. Die \textbf{stateless-Architektur} des Backends ermöglicht es, dass mehrere Instanzen parallel laufen können, ohne dass Daten zwischen ihnen geteilt werden müssen.
 
-Das Backend implementiert mehrere Performance-Optimierungen:
-
-\begin{itemize}
-    \item \textbf{Eager Loading:} Prisma's \texttt{include} für optimierte Datenbankabfragen
-    \item \textbf{Connection Pooling:} Automatisches Connection Management durch Prisma
-    \item \textbf{Query Optimization:} Selektive Feldauswahl und Index-Nutzung
-\end{itemize}
-
-\subsection{Skalierungsaspekte}
-
-\begin{itemize}
-    \item \textbf{Horizontal Scaling:} Stateless-Architektur ermöglicht Load Balancing
-    \item \textbf{Database Scaling:} PostgreSQL mit Read-Replicas für hohe Last
-    \item \textbf{Caching:} Redis-Integration für häufig abgerufene Daten
-\end{itemize}
+Für zukünftige Skalierung könnten weitere Optimierungen implementiert werden. \textbf{Horizontal Scaling} durch Load Balancing würde es ermöglichen, mehrere Backend-Instanzen hinter einem Load Balancer zu betreiben. Die Datenbank könnte durch \textbf{Read-Replicas} erweitert werden, um Leseoperationen zu verteilen und die Hauptdatenbank zu entlasten. \textbf{Redis-Integration} für Caching würde häufig abgerufene Daten im Speicher halten und die Antwortzeiten deutlich verbessern. Zusätzlich könnten \textbf{Datenbankindizes} für häufig verwendete Abfragen optimiert werden.
 
 \section{Sicherheitsaspekte}
 
-\subsection{Authentifizierung und Autorisierung}
+Das Backend implementiert umfassende \textbf{Sicherheitsmaßnahmen} auf mehreren Ebenen. Die \textbf{Authentifizierung} erfolgt über Clerk, der die \textbf{JWT-Token-Validierung} und das \textbf{Session-Management} übernimmt. Jeder API-Request muss einen gültigen Bearer-Token enthalten, aus dem die User-ID extrahiert wird. Diese User-ID wird dann für alle Datenbankoperationen verwendet, wodurch eine strikte \textbf{User-Isolation} gewährleistet ist, Benutzer können nur auf ihre eigenen Daten zugreifen.
 
-\begin{itemize}
-    \item \textbf{JWT-Token-Validierung:} Clerk übernimmt sichere Token-Verwaltung
-    \item \textbf{User-Isolation:} Alle Datenzugriffe sind user-spezifisch
-    \item \textbf{Session-Management:} Automatische Token-Erneuerung und -Revokation
-\end{itemize}
-
-\subsection{Input-Validierung}
-
-\begin{itemize}
-    \item \textbf{TypeScript-Typisierung:} Compile-time Validierung
-    \item \textbf{Express-Validierung:} Request-Body-Validierung
-    \item \textbf{SQL-Injection-Schutz:} Prisma ORM verhindert SQL-Injection
-\end{itemize}
-
-\subsection{Weitere Sicherheitsmaßnahmen}
-
-\begin{itemize}
-    \item \textbf{CORS-Konfiguration:} Restriktive Cross-Origin-Policies
-    \item \textbf{Error-Handling:} Keine sensiblen Informationen in Error-Responses
-    \item \textbf{Rate Limiting:} Schutz vor DDoS-Angriffen (geplant)
-    \item \textbf{HTTPS:} Erzwungene TLS-Verschlüsselung
-\end{itemize}
+Auf technischer Ebene bietet \textbf{TypeScript-Typisierung} bereits zur Kompilierzeit eine erste Validierung der Eingabedaten. Das \textbf{Prisma ORM} verhindert automatisch \textbf{SQL-Injection}-Angriffe durch parametrisierte Abfragen. Die \textbf{CORS-Konfiguration} schützt vor unerwünschten Cross-Origin-Requests. Das zentrale \textbf{Error-Handling} stellt sicher, dass keine sensiblen Informationen in Fehlermeldungen preisgegeben werden. Für zukünftige Erweiterungen könnten \textbf{Rate Limiting} zum Schutz vor DDoS-Angriffen und erzwungene \textbf{HTTPS-Verschlüsselung} implementiert werden.
 
 \section{Deployment und DevOps}
 
 \subsection{Umgebungskonfiguration}
 
-Das Backend nutzt Umgebungsvariablen für Konfiguration:
-
-\begin{lstlisting}[language=bash,caption={Umgebungsvariablen}]
-# Datenbank
-DATABASE_URL="postgresql://user:password@localhost:5432/shopping_app"
-
-# Clerk Authentication
-CLERK_SECRET_KEY="sk_test_..."
-CLERK_PUBLISHABLE_KEY="pk_test_..."
-
-# Server
-PORT=3001
-NODE_ENV=production
-\end{lstlisting}
+Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \textbf{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \textbf{CLERK\_SECRET\_KEY} und \textbf{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \textbf{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
 
 \subsection{Build und Deployment}
 
-\begin{lstlisting}[language=json,caption={Package.json Scripts}]
-{
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "jest"
-  }
-}
-\end{lstlisting}
+Das Backend wird über \textbf{TypeScript-Kompilierung} in JavaScript-Code umgewandelt. Der \textbf{Build-Prozess} mit \texttt{npm run build} kompiliert den TypeScript-Code und erstellt eine optimierte Version im \texttt{dist}-Verzeichnis. Für das \textbf{Deployment} wird der kompilierte Code zusammen mit den Umgebungsvariablen in die Zielumgebung übertragen. Der Server wird dann mit \texttt{npm start} gestartet, der den kompilierten Code aus \texttt{dist/index.js} ausführt. Die \textbf{API-Endpunkte} sind dann über HTTP/HTTPS erreichbar und können von der Frontend-App angesprochen werden. Wichtig ist, dass die Datenbankverbindung und alle Umgebungsvariablen korrekt konfiguriert sind, damit die API ordnungsgemäß funktioniert. Für die \textbf{Skalierung} können mehrere Backend-Instanzen parallel betrieben werden, da das Backend stateless ist und keine lokalen Daten speichert.
 
-\subsection{CI/CD-Pipeline}
 
-\begin{itemize}
-    \item \textbf{Automated Testing:} Jest-Tests bei jedem Commit
-    \item \textbf{Type Checking:} TypeScript-Compilation
-    \item \textbf{Database Migrations:} Automatische Schema-Updates
-    \item \textbf{Deployment:} Automatisierte Deployments nach erfolgreichen Tests
-\end{itemize}
 
 \section{Integration Tests}
 
@@ -508,125 +397,43 @@ export default config;
 
 \subsection{Authentifizierungstests}
 
-Die Authentifizierung wird umfassend getestet:
-
-\begin{lstlisting}[style=typescriptstyle,caption={Auth-Tests}]
-import request from "supertest";
-import app from "../app";
-
-jest.mock("@clerk/express");
-
-describe("Auth Header Middleware", () => {
-  it("should return 401 if no auth header is sent", async () => {
-    const res = await request(app).get("/api/shoppinglist/items");
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  it("should return 401 if invalid auth header is sent", async () => {
-    const res = await request(app)
-      .get("/api/shoppinglist/items")
-      .set("Authorization", "Bearer invalid-token");
-    expect(res.status).toBe(401);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  it("should return 200 if a valid auth header is sent", async () => {
-    const res = await request(app)
-      .get("/api/shoppinglist/items")
-      .set("Authorization", "Bearer valid-token");
-    expect(res.status).toBe(200);
-  });
-});
-\end{lstlisting}
+Die \textbf{Authentifizierung} wird umfassend getestet. Die Tests überprüfen verschiedene Szenarien: Fehlende Authorization-Header führen zu 401-Fehlern, ungültige Tokens werden korrekt abgelehnt und gültige Tokens ermöglichen den Zugriff auf geschützte Endpunkte. Diese Tests stellen sicher, dass die Sicherheitsmaßnahmen ordnungsgemäß funktionieren und unbefugte Zugriffe verhindert werden.
 
 \subsection{Shopping List Integration Tests}
 
-Die Shopping List Funktionalität wird mit umfassenden Integration Tests abgedeckt:
+Die Shopping List Funktionalität wird mit umfassenden \textbf{Integration Tests} abgedeckt. Diese Tests simulieren echte API-Aufrufe und überprüfen das gesamte System von der Request-Verarbeitung bis zur Datenbankoperation. Die Tests decken alle wichtigen Szenarien ab: Das Erstellen neuer Einkaufslisten, das Abrufen bestehender Listen, das Hinzufügen von Produkten sowie die Validierung von Eingabedaten. Besonders wichtig sind die Validierungstests, die sicherstellen, dass ungültige Eingaben wie Null-Werte, negative Mengen oder nicht-existierende Produkt-IDs korrekt abgelehnt werden. Die Test verwenden \texttt{'Bearer validToken'} als simulierten Token und führen so eine authentifizierte Benutzeranfragen durch.
 
-\begin{lstlisting}[style=typescriptstyle,caption={Shopping List Integration Tests}]
-import request from "supertest";
-import app from "../app";
-import { db } from "../lib/db";
-
-describe("ShoppingList Integration", () => {
-  beforeAll(async () => {
-    // Clean up test database
-    await db.shoppingList.deleteMany({ where: { userId: "test-user-id" } });
+\begin{lstlisting}[style=typescriptstyle,caption={Shopping List Integration Test}]
+describe('Shopping List API', () => {
+  it('should add item to shopping list', async () => {
+    const response = await request(app)
+      .put('/api/shoppinglist/')
+      .set('Authorization', `Bearer validToken`)
+      .send({
+        variantId: 1,
+        quantity: 2
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.items).toHaveLength(1);
+    expect(response.body.items[0].quantity).toBe(2);
   });
 
-  let createdList: any;
-
-  it("should create a shopping list", async () => {
-    const res = await request(app)
-      .post("/api/shoppinglist/")
-      .set("Authorization", "Bearer valid-token")
-      .send({ name: "IntegrationTestListe" });
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("id");
-    createdList = res.body;
-  });
-
-  it("should get the created shopping list", async () => {
-    const res = await request(app)
-      .get("/api/shoppinglist")
-      .set("Authorization", "Bearer valid-token");
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("id", createdList.id);
-  });
-  
-  it("should add an item to the shopping list", async () => {
-    const res = await request(app)
-      .put("/api/shoppinglist/")
-      .set("Authorization", "Bearer valid-token")
-      .send({ variantId: 1, quantity: 1 });
-    expect(res.status).toBe(200);
-  });
-
-  it("should return 400 if a null value is sent for variantId", async () => {
-    const res = await request(app)
-      .put("/api/shoppinglist/")
-      .set("Authorization", "Bearer valid-token")
-      .send({ variantId: null, quantity: 1 });
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  it("should return 404 when trying to add item with non-existent variantId", async () => {
-    const res = await request(app)
-      .put("/api/shoppinglist/")
-      .set("Authorization", "Bearer valid-token")
-      .send({ variantId: 999999999, quantity: 1 });
-    expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  it("should return 400 if quantity is negative", async () => {
-    const res = await request(app)
-      .put("/api/shoppinglist/")
-      .set("Authorization", "Bearer valid-token")
-      .send({ variantId: 1, quantity: -1 });
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
+  it('should reject invalid variant ID', async () => {
+    const response = await request(app)
+      .put('/api/shoppinglist/')
+      .set('Authorization', `Bearer validToken`)
+      .send({
+        variantId: 99999,
+        quantity: 1
+      });
+    expect(response.status).toBe(400);
   });
 });
 \end{lstlisting}
 
-Diese Tests decken die wichtigsten Szenarien ab:
-\begin{itemize}
-    \item \textbf{CRUD-Operationen:} Erstellen, Abrufen, Hinzufügen von Items
-    \item \textbf{Validierung:} Null-Werte, negative Mengen, nicht-existierende IDs
-    \item \textbf{Error Handling:} Korrekte HTTP-Status-Codes und Error-Responses
-    \item \textbf{Authentifizierung:} Alle Tests verwenden gültige Bearer-Tokens
-\end{itemize}
-
 \subsection{Mocking-Strategien}
 
-\begin{itemize}
-    \item \textbf{Clerk-Mocking:} Mock der Clerk-Authentifizierung für Tests
-    \item \textbf{Datenbank-Mocking:} Prisma-Client-Mocking für isolierte Tests
-    \item \textbf{External Services:} Mock von externen API-Calls
-\end{itemize}
+Die Tests verwenden eine Kombination aus \textbf{Mocking} und \textbf{echter Infrastruktur}. Die \textbf{Clerk-Authentifizierung} wird gemockt, um verschiedene Authentifizierungsszenarien zu simulieren und Test-User-IDs bereitzustellen. Die \textbf{echte Datenbank} wird für vollständige Integration Tests verwendet, was eine realistische Testumgebung gewährleistet. Die \textbf{Middleware-Pipeline} wird vollständig durchlaufen, wodurch alle Authentifizierungs- und Validierungsschritte getestet werden.
 
 \subsection{Test-Ausführung}
 
@@ -644,20 +451,11 @@ npm test -- shoppingList.test.ts
 
 \subsection{Ausblick: Erweiterte Tests}
 
-Für eine vollständige Testabdeckung könnten folgende Tests implementiert werden:
+Das Backend fokussiert sich auf \textbf{Integration Tests} und verzichtet bewusst auf \textbf{Unit Tests}. Dies liegt daran, dass die meisten Backend-Funktionen stark mit der Datenbank und Authentifizierung verknüpft sind. Unit Tests würden umfangreiches Mocking der Datenbank und Authentifizierung erfordern, was die Tests komplexer und weniger aussagekräftig machen würde. Die Integration Tests decken bereits die wichtigsten Szenarien ab und bieten eine realistische Testumgebung. Für zukünftige Erweiterungen könnten \textbf{Performance-Tests} für kritische Endpunkte und \textbf{Load-Tests} für die Skalierbarkeit implementiert werden.
 
-\begin{itemize}
-    \item \textbf{Products API Tests:} Vollständige CRUD-Operationen für Produkte
-    \item \textbf{Stores API Tests:} Store-Management und -Abruf
-    \item \textbf{Business Logic Tests:} Service-Layer-Tests mit Mock-Datenbank
-    \item \textbf{Error Handling Tests:} Validierung von Fehlerbehandlung
-    \item \textbf{Performance Tests:} Load-Testing für kritische Endpunkte
-    \item \textbf{End-to-End Tests:} Vollständige Workflows mit echter Datenbank
-\end{itemize}
+\section{Fazit}
 
-\section{Zusammenfassung}
-
-Das Backend der Smart Shopping App implementiert eine moderne, skalierbare Architektur mit Express.js, TypeScript und Prisma. Die API folgt RESTful-Prinzipien und bietet eine vollständige Authentifizierung über Clerk. Durch das Controller-Service-Pattern wird eine klare Trennung der Verantwortlichkeiten gewährleistet, während umfassende Tests die Codequalität sicherstellen.
+Das Backend der Smart Shopping App implementiert eine moderne, skalierbare Architektur mit Express.js, TypeScript und Prisma. Die API folgt RESTful-Prinzipien und bietet eine vollständige Authentifizierung über Clerk. Durch das Controller-Service-Pattern wird eine klare Trennung der Verantwortlichkeiten gewährleistet, während Integration Tests die Ausführbarkeit sicherstellen.
 
 Die Architektur ist darauf ausgelegt, zukünftige Erweiterungen wie Caching, Rate Limiting und erweiterte Sicherheitsfeatures einfach zu integrieren.
 
