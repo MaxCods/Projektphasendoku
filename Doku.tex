@@ -540,6 +540,671 @@ Dank der konsequenten Normalisierung, intelligenter Matching-Strategien und para
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BACKEND-KAPITEL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Backend-Architektur und API-Design}
+\renewcommand{\authorinitials}{MT}
+\label{chap:backend}
+
+\section{Backend-Aufbau und Signalverarbeitung}
+
+Das Backend der Smart Shopping App basiert auf einer modernen Express.js-Architektur mit TypeScript und folgt dem bewährten Controller-Service-Pattern. Die Anwendung ist in mehrere Schichten unterteilt, um eine klare Trennung der Verantwortlichkeiten zu gewährleisten.
+
+\subsection{Express.js App-Struktur}
+
+Die Hauptanwendung wird in \texttt{app.ts} konfiguriert und folgt einer Middleware-Pipeline-Architektur:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Express.js App-Konfiguration}]
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import apiRoutes from "@/routes";
+import errorHandler from "@/middleware/errorHandler";
+import { clerkMiddleware } from "@clerk/express";
+import { requireAuth }  from "@/lib/auth";
+
+dotenv.config();
+
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+app.use(clerkMiddleware());
+
+app.use("/api", requireAuth(), apiRoutes);
+
+app.use(errorHandler);
+
+export default app;
+\end{lstlisting}
+
+Die Middleware-Pipeline verarbeitet Requests in folgender Reihenfolge:
+\begin{enumerate}
+    \item \textbf{JSON-Parsing:} Automatische Deserialisierung von JSON-Requests
+    \item \textbf{CORS:} Cross-Origin Resource Sharing für Frontend-Kommunikation
+    \item \textbf{Clerk Middleware:} Authentifizierung und User-Management
+    \item \textbf{Auth Guard:} Zusätzliche Authentifizierungsprüfung
+    \item \textbf{API Routes:} Routing zu spezifischen Endpunkten
+    \item \textbf{Error Handler:} Zentrale Fehlerbehandlung
+\end{enumerate}
+
+\subsection{Authentifizierung mit Clerk}
+
+Die Authentifizierung erfolgt über Clerk, einem Identity-as-a-Service-Provider. Jeder API-Request muss einen gültigen Bearer-Token im Authorization-Header enthalten:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Authentifizierungs-Middleware}]
+export const requireAuth = () => (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const { userId } = getAuth(req);
+
+  if (!userId) {
+    res.status(401).json({
+      error: "Unauthorized",
+      message: "Authentication required",
+    });
+    return;
+  }
+
+  next();
+};
+\end{lstlisting}
+
+Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token, die dann in Controllern für user-spezifische Operationen verwendet wird.
+
+\subsection{Error Handling und Middleware}
+
+Das Backend implementiert ein zentrales Error-Handling-System, das verschiedene Fehlertypen unterschiedlich behandelt:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Zentraler Error Handler}]
+export default function errorHandler(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  console.error(err);
+  if (typeof err.message === "string" && err.message.startsWith("DB_ERROR")) {
+    res.status(500).json({ error: err.message });
+    return;
+  }
+  res.status(err.status || 500).json({ error: err.message || "Unknown Error" });
+}
+\end{lstlisting}
+
+Datenbankfehler werden speziell behandelt und mit dem Präfix "DB\_ERROR" gekennzeichnet, während andere Fehler mit einem generischen 500-Status beantwortet werden.
+
+\subsection{Request/Response-Flow}
+
+Der typische Request-Flow durchläuft folgende Schichten:
+
+\begin{enumerate}
+    \item \textbf{Route Layer:} Definiert HTTP-Endpunkte und HTTP-Methoden
+    \item \textbf{Controller Layer:} Extrahiert Request-Daten und delegiert an Services
+    \item \textbf{Service Layer:} Implementiert Business Logic und Datenbankoperationen
+    \item \textbf{Database Layer:} Prisma ORM für typsichere Datenbankzugriffe
+\end{enumerate}
+
+\section{API-Design und Endpunkte}
+
+Die API folgt RESTful-Prinzipien und ist in logische Ressourcen-Gruppen unterteilt. Jeder Endpunkt ist typgesichert und implementiert konsistente Response-Formate.
+
+\subsection{Routing-Struktur}
+
+Die API-Routen sind modular organisiert und werden über einen zentralen Router verwaltet:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Zentraler API-Router}]
+import { Router } from "express";
+import productsRouter from "./products";
+import shoppingListRouter from "./shoppingLists";
+import storesRouter from "./stores";
+
+const api = Router();
+
+api.use("/products", productsRouter);
+api.use("/shoppinglist", shoppingListRouter);
+api.use("/stores", storesRouter);
+
+export default api;
+\end{lstlisting}
+
+\subsection{Controller-Service-Pattern}
+
+Das Backend implementiert das Controller-Service-Pattern für eine klare Trennung zwischen HTTP-Logik und Business Logic:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Controller-Beispiel: Shopping List}]
+export const addItemToShoppingList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = getAuth(req);
+  const shoppingList = await service.addItemToShoppingList(
+    userId as string,
+    Number(req.body.variantId),
+    Number(req.body.quantity)
+  );
+  res.json(shoppingList);
+};
+\end{lstlisting}
+
+Controller sind für Request/Response-Handling zuständig, während Services die eigentliche Business Logic implementieren.
+
+\subsection{API-Dokumentation}
+
+\subsubsection{Shopping List Endpoints}
+
+\textbf{POST /api/shoppinglist/}
+\begin{itemize}
+    \item \textbf{Description:} Erstellt eine neue Einkaufsliste für den authentifizierten Benutzer
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Request Body:} Keine
+    \item \textbf{Response:} 
+    \begin{lstlisting}[language=JSON]
+{
+  "id": 1,
+  "name": "Default List",
+  "userId": "user_123",
+  "createdAt": "2024-01-15T10:30:00Z"
+}
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{GET /api/shoppinglist/}
+\begin{itemize}
+    \item \textbf{Description:} Ruft die aktuelle Einkaufsliste des Benutzers ab
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Response:} 
+    \begin{lstlisting}[language=JSON]
+{
+  "id": 1,
+  "name": "Default List",
+  "items": [
+    {
+      "id": 1,
+      "variantId": 5,
+      "quantity": 2,
+      "variant": {
+        "product": {
+          "name": "Bio Milch",
+          "brand": { "name": "GUT BIO" }
+        }
+      }
+    }
+  ]
+}
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{PUT /api/shoppinglist/}
+\begin{itemize}
+    \item \textbf{Description:} Fügt ein Produkt zur Einkaufsliste hinzu
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Request Body:}
+    \begin{lstlisting}[language=JSON]
+{
+  "variantId": 5,
+  "quantity": 2
+}
+    \end{lstlisting}
+    \item \textbf{Response:} Aktualisierte Einkaufsliste
+\end{itemize}
+
+\textbf{DELETE /api/shoppinglist/}
+\begin{itemize}
+    \item \textbf{Description:} Entfernt ein Produkt aus der Einkaufsliste
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Request Body:}
+    \begin{lstlisting}[language=JSON]
+{
+  "variantId": 5
+}
+    \end{lstlisting}
+\end{itemize}
+
+\textbf{GET /api/shoppinglist/items}
+\begin{itemize}
+    \item \textbf{Description:} Ruft alle Einkaufslisten-Items mit Produktdetails ab
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Response:}
+    \begin{lstlisting}[language=JSON]
+[
+  {
+    "id": 1,
+    "variantId": 5,
+    "quantity": 2,
+    "size": "1",
+    "unit": "l",
+    "name": "Bio Milch",
+    "price": 1.29,
+    "storeName": "Aldi Sued",
+    "brandName": "GUT BIO",
+    "imageUrl": "https://example.com/milk.jpg"
+  }
+]
+    \end{lstlisting}
+\end{itemize}
+
+\subsubsection{Products Endpoints}
+
+\textbf{GET /api/products}
+\begin{itemize}
+    \item \textbf{Description:} Ruft Produkte mit optionalen Filtern ab
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Query Parameters:}
+    \begin{itemize}
+        \item \texttt{search}: Suchbegriff für Produktname
+        \item \texttt{category}: Kategorie-Filter
+        \item \texttt{store}: Store-Filter
+        \item \texttt{limit}: Maximale Anzahl Ergebnisse (Default: 50)
+        \item \texttt{offset}: Offset für Pagination
+    \end{itemize}
+    \item \textbf{Response:}
+    \begin{lstlisting}[language=JSON]
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Bio Milch",
+      "brand": { "name": "GUT BIO" },
+      "variants": [
+        {
+          "id": 5,
+          "size": "1",
+          "unit": "l",
+          "storeOffers": [
+            {
+              "price": 1.29,
+              "store": { "name": "Aldi Sued" }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "total": 150,
+  "limit": 50,
+  "offset": 0
+}
+    \end{lstlisting}
+\end{itemize}
+
+\subsubsection{Stores Endpoints}
+
+\textbf{GET /api/stores}
+\begin{itemize}
+    \item \textbf{Description:} Ruft alle verfügbaren Stores ab
+    \item \textbf{Authentication:} Required (Bearer Token)
+    \item \textbf{Response:}
+    \begin{lstlisting}[language=JSON]
+[
+  {
+    "id": 1,
+    "name": "Aldi Sued",
+    "color": "#4B946A"
+  },
+  {
+    "id": 2,
+    "name": "Aldi Nord", 
+    "color": "#E74C3C"
+  }
+]
+    \end{lstlisting}
+\end{itemize}
+
+\section{Datenbankintegration}
+
+\subsection{Prisma ORM und Datenbankzugriff}
+
+Das Backend nutzt Prisma als TypeScript-first ORM für typsichere Datenbankoperationen. Die Datenbankverbindung wird über einen zentralen Client verwaltet:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Datenbankverbindung}]
+import { PrismaClient } from "@prisma/client";
+
+export const db = new PrismaClient();
+\end{lstlisting}
+
+\subsection{Service-Layer und Business Logic}
+
+Services implementieren die Business Logic und abstrahieren komplexe Datenbankoperationen. Ein typisches Beispiel ist der ShoppingListService:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Service-Layer Beispiel}]
+export const getShoppingListItems = async (userId: string) => {
+  const shoppingList = await db.shoppingList.findFirst({
+    where: { userId: userId },
+    include: {
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: {
+                include: {
+                  brand: true,
+                },
+              },
+              storeOffers: {
+                include: {
+                  store: true,
+                },
+              },
+              images: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!shoppingList) {
+    return null;
+  }
+
+  // Aggregation von Duplikaten
+  const shopitems = shoppingList.items.reduce(
+    (acc: typeof shoppingList.items, item) => {
+      const existingItem = acc.find((i) => i.variantId === item.variantId);
+      if (existingItem) {
+        existingItem.quantity = existingItem.quantity + item.quantity;
+      } else {
+        acc.push(item);
+      }
+      return acc;
+    },
+    [] as typeof shoppingList.items
+  );
+
+  return shopitems.map((item) => ({
+    id: item.variant?.product?.id,
+    variantId: item.variantId,
+    quantity: item.quantity,
+    size: item.variant?.size,
+    unit: item.variant?.unit,
+    name: item.variant?.product?.name,
+    price: item.variant?.storeOffers[0]?.price,
+    storeName: item.variant?.storeOffers[0]?.store?.name,
+    brandName: item.variant?.product?.brand?.name,
+    imageUrl: item.variant?.images[0]?.sourceUrl,
+  }));
+};
+\end{lstlisting}
+
+\subsection{Transaktionsmanagement}
+
+Für kritische Operationen werden Datenbanktransaktionen verwendet, um Datenkonsistenz zu gewährleisten.
+
+\subsection{Datenbankschema}
+
+% TODO: Datenbankschema-Beschreibung hier einfügen
+
+\section{Performance und Skalierung}
+
+\subsection{Optimierungen}
+
+Das Backend implementiert mehrere Performance-Optimierungen:
+
+\begin{itemize}
+    \item \textbf{Eager Loading:} Prisma's \texttt{include} für optimierte Datenbankabfragen
+    \item \textbf{Connection Pooling:} Automatisches Connection Management durch Prisma
+    \item \textbf{Query Optimization:} Selektive Feldauswahl und Index-Nutzung
+\end{itemize}
+
+\subsection{Skalierungsaspekte}
+
+\begin{itemize}
+    \item \textbf{Horizontal Scaling:} Stateless-Architektur ermöglicht Load Balancing
+    \item \textbf{Database Scaling:} PostgreSQL mit Read-Replicas für hohe Last
+    \item \textbf{Caching:} Redis-Integration für häufig abgerufene Daten
+\end{itemize}
+
+\section{Sicherheitsaspekte}
+
+\subsection{Authentifizierung und Autorisierung}
+
+\begin{itemize}
+    \item \textbf{JWT-Token-Validierung:} Clerk übernimmt sichere Token-Verwaltung
+    \item \textbf{User-Isolation:} Alle Datenzugriffe sind user-spezifisch
+    \item \textbf{Session-Management:} Automatische Token-Erneuerung und -Revokation
+\end{itemize}
+
+\subsection{Input-Validierung}
+
+\begin{itemize}
+    \item \textbf{TypeScript-Typisierung:} Compile-time Validierung
+    \item \textbf{Express-Validierung:} Request-Body-Validierung
+    \item \textbf{SQL-Injection-Schutz:} Prisma ORM verhindert SQL-Injection
+\end{itemize}
+
+\subsection{Weitere Sicherheitsmaßnahmen}
+
+\begin{itemize}
+    \item \textbf{CORS-Konfiguration:} Restriktive Cross-Origin-Policies
+    \item \textbf{Error-Handling:} Keine sensiblen Informationen in Error-Responses
+    \item \textbf{Rate Limiting:} Schutz vor DDoS-Angriffen (geplant)
+    \item \textbf{HTTPS:} Erzwungene TLS-Verschlüsselung
+\end{itemize}
+
+\section{Deployment und DevOps}
+
+\subsection{Umgebungskonfiguration}
+
+Das Backend nutzt Umgebungsvariablen für Konfiguration:
+
+\begin{lstlisting}[language=bash,caption={Umgebungsvariablen}]
+# Datenbank
+DATABASE_URL="postgresql://user:password@localhost:5432/shopping_app"
+
+# Clerk Authentication
+CLERK_SECRET_KEY="sk_test_..."
+CLERK_PUBLISHABLE_KEY="pk_test_..."
+
+# Server
+PORT=3001
+NODE_ENV=production
+\end{lstlisting}
+
+\subsection{Build und Deployment}
+
+\begin{lstlisting}[language=json,caption={Package.json Scripts}]
+{
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
+  }
+}
+\end{lstlisting}
+
+\subsection{CI/CD-Pipeline}
+
+\begin{itemize}
+    \item \textbf{Automated Testing:} Jest-Tests bei jedem Commit
+    \item \textbf{Type Checking:} TypeScript-Compilation
+    \item \textbf{Database Migrations:} Automatische Schema-Updates
+    \item \textbf{Deployment:} Automatisierte Deployments nach erfolgreichen Tests
+\end{itemize}
+
+\section{Integration Tests}
+
+\subsection{Test-Setup und Framework}
+
+Das Backend verwendet Jest als Test-Framework mit Supertest für HTTP-API-Tests:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Jest-Konfiguration}]
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/__tests__/**/*.test.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+};
+
+export default config;
+\end{lstlisting}
+
+\subsection{Authentifizierungstests}
+
+Die Authentifizierung wird umfassend getestet:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Auth-Tests}]
+import request from "supertest";
+import app from "../app";
+
+jest.mock("@clerk/express");
+
+describe("Auth Header Middleware", () => {
+  it("should return 401 if no auth header is sent", async () => {
+    const res = await request(app).get("/api/shoppinglist/items");
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("should return 401 if invalid auth header is sent", async () => {
+    const res = await request(app)
+      .get("/api/shoppinglist/items")
+      .set("Authorization", "Bearer invalid-token");
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("should return 200 if a valid auth header is sent", async () => {
+    const res = await request(app)
+      .get("/api/shoppinglist/items")
+      .set("Authorization", "Bearer valid-token");
+    expect(res.status).toBe(200);
+  });
+});
+\end{lstlisting}
+
+\subsection{Shopping List Integration Tests}
+
+Die Shopping List Funktionalität wird mit umfassenden Integration Tests abgedeckt:
+
+\begin{lstlisting}[style=typescriptstyle,caption={Shopping List Integration Tests}]
+import request from "supertest";
+import app from "../app";
+import { db } from "../lib/db";
+
+describe("ShoppingList Integration", () => {
+  beforeAll(async () => {
+    // Clean up test database
+    await db.shoppingList.deleteMany({ where: { userId: "test-user-id" } });
+  });
+
+  let createdList: any;
+
+  it("should create a shopping list", async () => {
+    const res = await request(app)
+      .post("/api/shoppinglist/")
+      .set("Authorization", "Bearer valid-token")
+      .send({ name: "IntegrationTestListe" });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("id");
+    createdList = res.body;
+  });
+
+  it("should get the created shopping list", async () => {
+    const res = await request(app)
+      .get("/api/shoppinglist")
+      .set("Authorization", "Bearer valid-token");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("id", createdList.id);
+  });
+  
+  it("should add an item to the shopping list", async () => {
+    const res = await request(app)
+      .put("/api/shoppinglist/")
+      .set("Authorization", "Bearer valid-token")
+      .send({ variantId: 1, quantity: 1 });
+    expect(res.status).toBe(200);
+  });
+
+  it("should return 400 if a null value is sent for variantId", async () => {
+    const res = await request(app)
+      .put("/api/shoppinglist/")
+      .set("Authorization", "Bearer valid-token")
+      .send({ variantId: null, quantity: 1 });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("should return 404 when trying to add item with non-existent variantId", async () => {
+    const res = await request(app)
+      .put("/api/shoppinglist/")
+      .set("Authorization", "Bearer valid-token")
+      .send({ variantId: 999999999, quantity: 1 });
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("should return 400 if quantity is negative", async () => {
+    const res = await request(app)
+      .put("/api/shoppinglist/")
+      .set("Authorization", "Bearer valid-token")
+      .send({ variantId: 1, quantity: -1 });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+});
+\end{lstlisting}
+
+Diese Tests decken die wichtigsten Szenarien ab:
+\begin{itemize}
+    \item \textbf{CRUD-Operationen:} Erstellen, Abrufen, Hinzufügen von Items
+    \item \textbf{Validierung:} Null-Werte, negative Mengen, nicht-existierende IDs
+    \item \textbf{Error Handling:} Korrekte HTTP-Status-Codes und Error-Responses
+    \item \textbf{Authentifizierung:} Alle Tests verwenden gültige Bearer-Tokens
+\end{itemize}
+
+\subsection{Mocking-Strategien}
+
+\begin{itemize}
+    \item \textbf{Clerk-Mocking:} Mock der Clerk-Authentifizierung für Tests
+    \item \textbf{Datenbank-Mocking:} Prisma-Client-Mocking für isolierte Tests
+    \item \textbf{External Services:} Mock von externen API-Calls
+\end{itemize}
+
+\subsection{Test-Ausführung}
+
+\begin{lstlisting}[language=bash,caption={Test-Befehle}]
+# Alle Tests ausfuehren
+npm test
+
+# Tests im Watch-Modus
+npm test -- --watch
+
+# Spezifische Test-Datei
+npm test -- authHeader.test.ts
+npm test -- shoppingList.test.ts
+\end{lstlisting}
+
+\subsection{Ausblick: Erweiterte Tests}
+
+Für eine vollständige Testabdeckung könnten folgende Tests implementiert werden:
+
+\begin{itemize}
+    \item \textbf{Products API Tests:} Vollständige CRUD-Operationen für Produkte
+    \item \textbf{Stores API Tests:} Store-Management und -Abruf
+    \item \textbf{Business Logic Tests:} Service-Layer-Tests mit Mock-Datenbank
+    \item \textbf{Error Handling Tests:} Validierung von Fehlerbehandlung
+    \item \textbf{Performance Tests:} Load-Testing für kritische Endpunkte
+    \item \textbf{End-to-End Tests:} Vollständige Workflows mit echter Datenbank
+\end{itemize}
+
+\section{Zusammenfassung}
+
+Das Backend der Smart Shopping App implementiert eine moderne, skalierbare Architektur mit Express.js, TypeScript und Prisma. Die API folgt RESTful-Prinzipien und bietet eine vollständige Authentifizierung über Clerk. Durch das Controller-Service-Pattern wird eine klare Trennung der Verantwortlichkeiten gewährleistet, während umfassende Tests die Codequalität sicherstellen.
+
+Die Architektur ist darauf ausgelegt, zukünftige Erweiterungen wie Caching, Rate Limiting und erweiterte Sicherheitsfeatures einfach zu integrieren.
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MARKTGURU-SCRAPER-KAPITEL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Erfassung von Angebotspreisen über Marktguru}
