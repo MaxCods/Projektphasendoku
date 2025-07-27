@@ -1,10 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ARCHIVE-SCREENS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Archivfunktion und Detailansicht}
-\renewcommand{\authorinitials}{FK}
+\section{Archivfunktion und Detailansicht}
 
-\section{Nutzerperspektive}
+\subsection{Nutzerperspektive}
 
 Die Archivansicht dient dazu, dem Nutzer einen Überblick über vergangene, abgeschlossene Einkaufslisten zu geben. Sie ermöglicht es, vergangene Listen anzusehen und bei Bedarf dauerhaft zu löschen. In der Detailansicht kann der Nutzer die vollständigen Inhalte einer archivierten Liste einsehen, wobei eine Bearbeitung bewusst nicht vorgesehen ist.
 
@@ -14,7 +13,7 @@ Ein Tippen auf einen Eintrag führt den Nutzer zur Detailansicht. Dort sieht er 
 
 Der typische User Flow beginnt in der Regel auf der Startseite oder im Settings-Bereich, von wo aus der Nutzer über den Bottom Tab \enquote{Archive} zur Archivübersicht gelangt. Von dort kann er einzelne Listen antippen, um Details zu sehen. Die Rücknavigation erfolgt entweder über die native Systemnavigation oder über einen integrierten Zurück-Button in der \texttt{TopBar}.
 
-\section{Technische Perspektive}
+\subsection{Technische Perspektive}
 
 Die technische Umsetzung basiert auf der Stack-Navigation des \texttt{Expo Router}. Der \texttt{ArchiveScreen} ist für das Laden und Löschen der archivierten Listen verantwortlich, während der \texttt{ArchiveDetail}-Screen auf Basis einer ID aus der URL die Inhalte einer spezifischen Liste anzeigt.
 

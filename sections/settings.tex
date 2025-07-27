@@ -1,10 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SETTINGS-SCREEN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Einstellungen und Nutzerprofil}
-\renewcommand{\authorinitials}{FK}
+\section{Einstellungen und Nutzerprofil}
 
-\section{Nutzerperspektive}
+\subsection{Nutzerperspektive}
 
 Der Einstellungen-Screen stellt eine zentrale Steuerzentrale für den Nutzer dar. Hier kann er seine Profildaten einsehen, auf Hilfeseiten zugreifen, zu archivierten Listen oder zur Einkaufsliste navigieren oder sich aus der App ausloggen.
 
@@ -14,7 +13,7 @@ Darunter folgen mehrere Einstellungseinträge in Form von \texttt{SettingsRows},
 
 Der User Flow ist einfach: Der Nutzer gelangt über den Bottom Tab \enquote{Settings} zum Screen. Von dort kann er durch Antippen seines Profils das \texttt{UserProfile}-Modal von \texttt{Clerk} öffnen, zum Archiv navigieren oder sich abmelden. Einträge wie \enquote{Shopping Lists} oder \enquote{Support} sind aktuell noch nicht mit konkreter Funktion hinterlegt.
 
-\section{Technische Perspektive}
+\subsection{Technische Perspektive}
 
 Die Hauptkomponente \texttt{SettingsScreen} wird ergänzt durch die beiden Subkomponenten \texttt{SettingsGroup} (als Wrapper für gruppierte Einträge) und \texttt{SettingsRow} (für einzelne Einstellungen). Ergänzt wird dies durch die \texttt{TopBar} sowie den \texttt{SignOutButton}.
 
