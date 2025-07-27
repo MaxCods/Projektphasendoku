@@ -436,7 +436,18 @@ Das zentrale interaktive Element ist der Button selbst. Ein Klick darauf löst d
 Die SignOutButton-Komponente wird überall dort eingesetzt, wo Nutzer die Möglichkeit haben sollen, sich aus der App abzumelden, beispielsweise im Profil- oder Einstellungsbereich. Sie sorgt für eine einfache und sichere Abmeldung und kann flexibel in verschiedenen Bereichen der App eingebunden werden.
 
 \subsubsection{ButtonSquare}
-Die ButtonSquare-Komponente ist ein quadratischer, interaktiver Button, der in der App als Floating Action Button (FAB) fungiert. Er wird in der Regel am unteren rechten Bildschirmrand platziert und hebt sich durch seine Größe und Form von anderen UI-Elementen ab. Der Button kann mit einem Icon versehen werden, das eine spezifische Aktion repräsentiert, wie beispielsweise das Hinzufügen eines neuen Elements oder das Starten einer Suche. Die Komponente nutzt Pressable für die Interaktivität und bietet visuelles Feedback bei Berührung. Sie ist so gestaltet, dass sie sowohl auf iOS als auch auf Android gut aussieht und funktioniert, und kann leicht in verschiedene Screens integriert werden.
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+Die ButtonSquare-Komponente ist eine wiederverwendbare Schaltfläche in quadratischer Form für React Native. Sie nimmt optionale Props entgegen: eine Callback-Funktion für das Drücken (onPress), ein Icon, einen Text, zusätzliche Klassen für das Styling (className) und eine Icon-Farbe. Das Icon wird dynamisch eingefärbt und in die Schaltfläche eingefügt.
+
+\noindent\textbf{Darstellung:}
+Die Schaltfläche ist quadratisch, hat abgerundete Ecken und einen hellgrauen Hintergrund. Sie ist zentriert, leicht gepolstert und mit einem Schatten versehen, um sich optisch vom Hintergrund abzuheben. Das Icon steht im Mittelpunkt der Schaltfläche und kann farblich angepasst werden.
+
+\noindent\textbf{Interaktive Elemente:}
+Das zentrale Element ist die Schaltfläche selbst, die auf Berührungen reagiert. Beim Drücken wird die übergebene onPress-Funktion ausgeführt. Die Schaltfläche gibt visuelles Feedback durch die Änderung der Opazität beim Drücken.
+
+\noindent\textbf{Verwendung:}
+ButtonSquare eignet sich für kompakte, klickbare Icons in der App, zum Beispiel für Navigations- oder Aktionsbuttons. Sie kann flexibel überall dort eingesetzt werden, wo ein quadratischer Button mit Icon benötigt wird, und lässt sich durch die Props individuell anpassen.
 
 \subsubsection{ButtonSizeable}
 Die ButtonSizeable-Komponente ist ein anpassbarer Button, der in der Größe variabel ist und sich somit flexibel in verschiedene Layouts einfügen lässt. Er kann sowohl als runder als auch als quadratischer Button dargestellt werden, je nach den Anforderungen des Designs. Die Größe des Buttons kann über Props gesteuert werden, sodass Entwickler ihn leicht an unterschiedliche Bildschirmgrößen und -auflösungen anpassen können. Die Komponente verwendet ebenfalls Pressable für die Interaktivität und bietet visuelles Feedback bei Berührung. Sie ist so gestaltet, dass sie auf beiden Plattformen, iOS und Android, gut aussieht und funktioniert.
