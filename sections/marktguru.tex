@@ -1,0 +1,147 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MARKTGURU-SCRAPER-KAPITEL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Erfassung von Angebotspreisen über Marktguru}
+\renewcommand{\authorinitials}{DH}
+\label{chap:marktguru_scraping}
+
+\section{Einleitung und Zielsetzung}
+In diesem Kapitel wird der separate Scraper vorgestellt, der zeitlich begrenzte \textbf{Angebotspreise} auf der Prospekt-Plattform \textit{Marktguru} erfasst. Im Gegensatz zum Grundpreis-Scraping fokussiert sich dieser Scraper auf rabattierte Artikel verschiedener Händler, wie z.\,B. REWE, LIDL, Kaufland und weitere, die alle ein einheitliches DOM-Layout auf \url{https://www.marktguru.de} verwenden. Ziel ist eine robuste und modulare Architektur, die neue Händler durch einfache Konfiguration ergänzt und dabei sowohl Performance als auch Wartbarkeit gewährleistet.
+
+\section{Architektur und Modulstruktur}
+Der Scraper ist nach dem \emph{Configuration-Driven} und \emph{Factory}-Pattern aufgebaut. Die Hauptkomponenten sind:
+\begin{itemize}
+  \item \texttt{config.py}: Zentrale Definition aller Händler-URLs und Default-Settings.  
+  \item \texttt{scraper\_factory.py}: Erzeugt \texttt{MarktGuruScraper}-Instanzen auf Basis von \texttt{config.py}.  
+  \item \texttt{webdriver\_manager.py}: Kapselt die Einrichtung des Chrome WebDrivers.  
+  \item \texttt{marktguru\_scraper.py}: Kernklassen mit Selenium- und BeautifulSoup-Logik.  
+  \item \texttt{discount.py}, \texttt{file\_manager.py}, \texttt{logger.py}: Datenmodell, Dateimanagement und Logging.  
+\end{itemize}
+
+\subsection{Konfiguration mit \texttt{config.py}}
+Die Datei \texttt{config.py} enthält eine Mapping-Tabelle aller zu unterstützenden Händler sowie globale Default-Parameter wie Postleitzahl und Timeouts.
+\begin{lstlisting}[language=Python, caption={Auszug aus \texttt{config.py}}]
+STORES = {
+    'rewe': {
+        'url': 'https://www.marktguru.de/r/rewe',
+        'name': 'REWE',
+        'description': 'REWE supermarket chain'
+    },
+    ...
+}
+DEFAULT_SETTINGS = {
+    'postcode': '97070',
+    'headless': True,
+    'max_retries': 3,
+    ...
+}
+\end{lstlisting}
+
+\subsection{Factory-Pattern in \texttt{scraper\_factory.py}}
+Die Klasse \texttt{ScraperFactory} liest die Händler-Konfiguration aus \texttt{config.py} und liefert eine jeweils konfigurierte \texttt{MarktGuruScraper}-Instanz.
+
+\begin{lstlisting}[language=Python, caption={Schlüsselmethode in \texttt{scraper\_factory.py}}]
+@classmethod
+def create_scraper(cls, store_name: str, headless: bool = True) -> MarktGuruScraper:
+    store_key = store_name.lower().strip()
+    if store_key not in STORES:
+        raise ValueError(f"Unknown store: {store_name}")
+    cfg = STORES[store_key]
+    return MarktGuruScraper(
+        store_name=cfg['name'],
+        store_url=cfg['url'],
+        headless=headless
+    )
+\end{lstlisting}
+
+\subsection{WebDriver-Verwaltung mit \texttt{webdriver\_manager.py}}
+\texttt{WebDriverManager} übernimmt:
+\begin{itemize}
+  \item Auffinden oder automatisches Installieren von ChromeDriver.  
+  \item Konfiguration von Chrome-Optionen zur Bot-Verschleierung (\texttt{--disable-blink-features=AutomationControlled}, User-Agent).  
+  \item Kontext-Manager für automatisches Starten und Schließen des Browsers.  
+\end{itemize}
+
+\section{Implementierungsdetails}
+\subsection{Scraping-Prozess im \texttt{MarktGuruScraper}}
+Der Hauptprozess in \texttt{marktguru\_scraper.py} gliedert sich in:
+\begin{enumerate}
+  \item Navigation zur Händler-URL und Warten auf Body-Ladezustand.
+  \item Akzeptieren des Cookie-Popups:
+    \begin{lstlisting}[language=Python, caption={Cookie-Popup-Handling}]
+def handle_cookie_popup(self, driver):
+    wait = WebDriverWait(driver, 10)
+    btn = wait.until(EC.element_to_be_clickable(
+        (By.CSS_SELECTOR, 'button[data-testid="uc-accept-all-button"]')))
+    btn.click()
+    time.sleep(2)
+    return True
+    \end{lstlisting}
+  \item Setzen des Standorts mittels Postleitzahl: Eingabe in das Autocomplete-Feld und Auswahl.  
+  \item Laden aller Angebote durch wiederholtes Klicken des "`Mehr angebote"'-Buttons:
+    \begin{lstlisting}[language=Python, caption={Angebotsliste vollständig laden}]
+def load_all_offers(self, driver):
+    attempts = 0
+    while attempts < SCRAPER_SETTINGS['max_load_attempts']:
+        try:
+            more = driver.find_element(By.CSS_SELECTOR, "button.more-btn.uppercase")
+            driver.execute_script("arguments[0].click();", more)
+            time.sleep(SCRAPER_SETTINGS['after_click_delay'])
+            attempts += 1
+        except NoSuchElementException:
+            break
+    \end{lstlisting}
+  \item Extraktion der Angebotsdaten mit Selenium und BeautifulSoup:
+    \begin{lstlisting}[language=Python, caption={Datenextraktion aus einem Listeneintrag}]
+def extract_discount_info(self, item, base_url):
+    title = item.find('h3').get_text(strip=True)
+    price = item.find('span', class_='price').get_text(strip=True)
+    img = item.find('img', class_='offer-list-item-img').get('src')
+    return Discount(
+        title=title,
+        retailer=self.store_name,
+        scraped_at=datetime.now().isoformat(),
+        image_url=img,
+        price=price,
+        price_numeric=Discount(...).extract_price_numeric(price),
+        ...
+    )
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Datenmodell und Speicherung}
+\begin{itemize}
+  \item \texttt{Discount} und \texttt{DiscountCollection} kapseln alle Angebotsfelder und liefern Statistikmethoden.  
+  \item \texttt{FileManager} erzeugt standardisierte Pfade und sichert JSON-Dateien inkl. Zeitstempel im Dateinamen.  
+\end{itemize}
+
+\section{Rechtliche und ethische Aspekte}
+\subsection{Rechtlicher Rahmen in Deutschland}
+Web Scraping bewegt sich rechtlich in einer Grauzone: Zwar sind öffentliche Webseiten grundsätzlich frei zugänglich, jedoch kann das automatisierte Abrufen gegen die \emph{Nutzungsbedingungen} der Betreiber verstoßen. Das deutsche Urheberrecht (§ 44a UrhG) schützt das Layout und die redaktionelle Struktur, das \emph{Hausrecht} des Seitenbetreibers erlaubt das Verbot automatisierter Zugriffe. Im Zweifelsfall empfiehlt sich das Einholen einer ausdrücklichen Genehmigung oder die Nutzung bereitgestellter APIs.
+
+\subsection{Ethische Überlegungen}
+\begin{itemize}
+  \item \textbf{Server-Last:} Durch angemessene Verzögerungen (\texttt{between\_requests\_delay}) und Retries werden Überlastungen vermieden.  
+  \item \textbf{robots.txt}: Auch wenn sie rechtlich nicht bindend ist, dient sie als ethischer Leitfaden für erlaubte Pfade.  
+  \item \textbf{Datenschutz:} Keine Erfassung personenbezogener Daten, Einhaltung der DSGVO.  
+  \item \textbf{Transparenz:} Dokumentation und Offenlegung der Scraping-Methoden stärkt das Vertrauen.  
+\end{itemize}
+
+
+\subsection{Analyse der \texttt{robots.txt}}
+Die \texttt{robots.txt} von Marktguru erlaubt ausnahmslos allen Crawlern den Zugriff auf sämtliche Bereiche der Website, da nach der Zeile
+\begin{verbatim}
+User-agent: *
+\end{verbatim}
+keine \texttt{Disallow:}-Direktiven folgen. Zusätzlich listet sie mehrere Sitemaps auf, zum Beispiel:
+\begin{verbatim}
+Sitemap: https://www.marktguru.de/r-sitemap-index.xml
+Sitemap: https://www.marktguru.de/b-sitemap-index.xml
+...
+\end{verbatim}
+Diese Sitemap‑Indexdateien bieten eine strukturierte Übersicht aller Unter‑Sitemaps oder URLs und können direkt genutzt werden, um systematisch alle Angebotsseiten zu erfassen, anstatt sie ausschließlich über DOM‑Navigaton zu finden.
+
+
+\cleardoublepage
+
+

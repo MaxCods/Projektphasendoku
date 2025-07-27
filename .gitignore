@@ -10,3 +10,6 @@
 # Include media directory and all its contents
 !media/
 !media/**
+
+!sections/
+!sections/**

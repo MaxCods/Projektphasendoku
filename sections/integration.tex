@@ -1,0 +1,90 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INTEGRATION VON FRONTEND UND BACKEND
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Integration von Frontend und Backend}
+\renewcommand{\authorinitials}{DH}
+
+\label{chap:integration}
+
+\section{Überblick der Client–Server-Kommunikation}
+Die Kommunikation zwischen dem mobilen Frontend und dem Express‑Backend erfolgt über eine REST‑API, die im Frontend durch einen zentralen \texttt{ApiService} gekapselt wird. Dieser nutzt Axios, um HTTP‑Requests an das Backend zu senden und Authentifizierungs­token automatisch in die Header einzufügen.
+
+\subsection{ApiService im Frontend}
+Im Frontend definiert \texttt{api.ts} die \texttt{ApiService}-Klasse mit Methoden für alle CRUD‑Operationen der Einkaufslisten. Ein exemplarischer Ausschnitt:
+
+\begin{lstlisting}[language=TypeScript,caption={Definition der \texttt{createShoppingList}-Methode im \texttt{ApiService}}]
+public async createShoppingList(): Promise<ShoppingListItem[]> {
+const response = await this.axiosInstance.post("/shoppinglist/");
+return response.data || [];
+}
+\end{lstlisting}
+
+In der React‑Komponente \texttt{ListScreen.tsx} wird diese Methode wie folgt genutzt:
+
+\begin{lstlisting}[language=TypeScript,caption={Aufruf von \texttt{createShoppingList} im Frontend}]
+const handleCreateShoppingList = async () => {
+setIsCreatingList(true);
+try {
+const apiResponse = await api.createShoppingList();
+setShoppingList(apiResponse);
+setHasShoppingList(true);
+Alert.alert("Success", "Shopping list created successfully!");
+} catch {
+Alert.alert("Error", "Could not create shopping list");
+} finally {
+setIsCreatingList(false);
+}
+};
+\end{lstlisting}
+
+\section{Backend‑Implementierung der Endpunkte}
+Das Backend exponiert unter \texttt{/api/shoppinglist} eine Reihe von Endpunkten, die in \texttt{shoppingLists.ts} (Router) und \texttt{shoppingListsController.ts} (Controller) definiert sind.
+
+\subsection{Router‑Definition}
+Der Einkaufslisten‑Router hierzu:
+
+\begin{lstlisting}[language=TypeScript,caption={Routing des Einkaufslisten‑Endpoints im Backend (\texttt{shoppingLists.ts})}]
+import { Router } from "express";
+import { createShoppingList, getShoppingListItems } from "@/controllers/shoppingListsController";
+import { asyncHandler } from "@/utils/asyncHandler";
+
+const router = Router();
+
+// POST /api/shoppinglist/ -> createShoppingList
+router.post("/", asyncHandler(createShoppingList));
+
+// GET /api/shoppinglist/items -> getShoppingListItems
+router.get("/items", asyncHandler(getShoppingListItems));
+
+export default router;
+\end{lstlisting}
+
+\subsection{Controller‑Logik}
+Im Controller werden die Anfragen authentifiziert und an den Service weitergeleitet:
+
+\begin{lstlisting}[language=TypeScript,caption={Erstellen eines Einkaufslisten‑Eintrags im Backend (\texttt{shoppingListsController.ts})}]
+import { Request, Response } from "express";
+import { getAuth } from "@clerk/express";
+import * as service from "@/services/shoppingListsService";
+
+export const createShoppingList = async (
+req: Request,
+res: Response
+) => {
+const { userId } = getAuth(req);
+const shoppingList = await service.createShoppingList(
+"Default List",
+userId as string
+);
+res.json(shoppingList);
+};
+\end{lstlisting}
+
+\section{Datenfluss im Anwendungsfall „Liste laden“}
+\begin{enumerate}
+\item \textbf{Initialisierung}: Beim Fokussieren der \texttt{ListScreen}-Komponente ruft \texttt{loadList()} die Methoden \texttt{api.checkShoppingListExists()} und \texttt{api.getShoppingListItems()} auf.
+\item \textbf{HTTP‑Requests}: Axios sendet einen \texttt{GET /shoppinglist} bzw. \texttt{GET /shoppinglist/items} Request inklusive Bearer‑Token.
+\item \textbf{Backend‑Authentifizierung}: Der Express‑Middleware \texttt{getAuth(req)} extrahiert das Clerk‑Token und identifiziert den Benutzer.
+\item \textbf{Service‑Aufruf}: Die Controller‑Funktion holt die Liste aus der Datenbank über \texttt{shoppingListsService.getShoppingListItems(userId)}.
+\item \textbf{Antwort an Frontend}: Der Controller serialisiert das Ergebnis als JSON, welches vom Frontend direkt in den State übernommen wird.
+\end{enumerate}
