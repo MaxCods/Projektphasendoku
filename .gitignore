@@ -6,3 +6,5 @@
 
 # And not .gitignore itself
 !.gitignore
+
+!media/
