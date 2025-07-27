@@ -8,11 +8,6 @@
 \section{Einleitung}
 Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den technischen Funktionalitäten der Smart Shopping App her. Sie spielt eine zentrale Rolle bei der täglichen Nutzung der App, da sie das Hinzufügen von Produkten zur Einkaufsliste, das Anzeigen und Bearbeiten der Listen sowie die Darstellung der Preisinformationen und Marktvergleiche ermöglicht.
 
-\section{Grundlegende Anforderungen an die UI}
-Die Benutzeroberfläche der Smart Shopping App muss verschiedene grundlegende Anforderungen erfüllen, um eine optimale Nutzererfahrung zu gewährleisten. Eine intuitive Bedienbarkeit steht dabei im Vordergrund, sodass die Navigation und Bedienung der App für alle Nutzer:innen verständlich und schnell erlernbar ist. Das responsive Design stellt sicher, dass sich die Oberfläche an unterschiedliche Bildschirmgrößen anpasst, sei es auf Smartphones, Tablets oder Desktop-Geräten.
-
-Ein weiterer wichtiger Aspekt ist das Echtzeit-Feedback, durch das Preisvergleiche und Marktvorschläge unmittelbar nach Eingabe oder Änderung der Einkaufsliste angezeigt werden. Die modulare Architektur der UI ermöglicht es, die Anwendung um weitere Features wie zusätzliche Märkte oder Angebotsfunktionen zu erweitern, ohne die bestehende Struktur grundlegend ändern zu müssen.
-
 \section{Mockups und zentrale Ansichten}
 % Hier können später Skizzen/Mobile Screenshots oder Diagramme eingefügt werden.
 % Beispiel (mit Platzhalter):
@@ -31,14 +26,6 @@ Ein weiterer wichtiger Aspekt ist das Echtzeit-Feedback, durch das Preisvergleic
     \caption{Mockup: Hauptansicht der Smart Shopping App}
     \label{fig:ui_mockup}
 \end{figure}
-
-\section{Beschreibung zentraler UI-Elemente}
-Die Benutzeroberfläche der Smart Shopping App besteht aus mehreren zentralen Elementen, die eine optimale Nutzererfahrung gewährleisten. Die Einkaufsliste bietet eine übersichtliche Darstellung der gewählten Produkte und ermöglicht es den Nutzer:innen, Mengen anzupassen und gekaufte Artikel abzuhaken. Die Marktvergleichsübersicht zeigt transparent an, bei welchem Markt die aktuelle Liste am günstigsten ist, und bietet eine detaillierte Übersicht über die Einzelpreise der Produkte.
-
-Ein weiteres wichtiges Element ist die Produktsuche mit Autocomplete-Funktion, die das Hinzufügen neuer Produkte durch intelligente Vorschläge erheblich beschleunigt. Die Detailsicht stellt zusätzliche Produktinformationen zur Verfügung, einschließlich der durch Scraping und Enrichment gewonnenen Daten sowie aktueller Angebotspreise. Schließlich ermöglicht der Bereich für Nutzerprofil und Einstellungen die Personalisierung der App durch die Auswahl bevorzugter Märkte und verschiedener Filteroptionen.
-
-\section{Geplante Weiterentwicklungen}
-% Hier können noch weitere Features oder Ideen wie Barcode-Scanner, ortsbasierte Marktempfehlungen etc. ergänzt werden.
 
 \section{Home-Screen}
 \label{sec:home_screen}
@@ -252,27 +239,19 @@ Die State-Synchronisation stellte eine weitere Herausforderung dar, da Filter au
 
 \subsection{Home(index)}
 
-\subsubsection{ShoppingListItemCard}
-Die Komponente ShoppingListItemCard stellt ein einzelnes Produkt in einer Einkaufsliste als interaktive Karte dar. Sie zeigt Produktinformationen und ermöglicht Swipe-Aktionen.
+\subsubsection{Card}
 
 \noindent\textbf{Aufbau und Funktionsweise:}
+Die Card-Komponente ist eine React Native-Komponente, die die Daten eines einzelnen Produkts als Karte darstellt. Sie erhält alle relevanten Produktinformationen (Name, Marke, Größe, Einheit, Preis, Menge, Bild-URL) sowie optionale Callback-Funktionen für das Auswählen (onPress) und Löschen (onDelete). Die Komponente nutzt einen Swipeable-Container, um die Löschfunktion per Wischgeste zu ermöglichen.
 
-\textbf{Props:}
-\begin{itemize}
-    \item Produktdaten wie Name, Marke, Preis, Menge, Einheit, Größe und Bild-URL.
-    \item Optional: onPress für Klickaktionen, hasAButton für einen Aktions-Button, sowie renderRightActions und renderLeftActions für individuelle Swipe-Aktionen.
-\end{itemize}
+\noindent\textbf{Darstellung:}
+Das Produkt wird in einer horizontalen Karte angezeigt. Links befindet sich das Produktbild, daneben die Produktdetails wie Name, Marke, Größe, Einheit und Preis. Die Menge wird, falls vorhanden, ganz rechts angezeigt. Die Karte ist optisch ansprechend gestaltet, mit abgerundeten Ecken, Schatten und modernen Farben.
 
-\textbf{Darstellung:}
-Die Karte präsentiert sich mit abgerundeten Ecken und einem Schatten, der ihr Tiefe verleiht. Sie zeigt das Produktbild, den Namen, die Marke, den Preis und die Mengenangaben in einer übersichtlichen Anordnung. Das Bild wird dabei links positioniert, während die Produktdetails rechts daneben angezeigt werden.
+\noindent\textbf{Interaktive Elemente:}
+Die Karte kann angetippt werden, um eine Aktion auszulösen (z.\,B. Details anzeigen), sofern eine onPress-Funktion übergeben wurde. Durch Wischen nach links erscheint ein rotes Feld mit einem Papierkorb-Icon, über das das Produkt gelöscht werden kann. Die Löschfunktion wird nur angezeigt, wenn eine onDelete-Funktion vorhanden ist.
 
-\textbf{Interaktivität:}
-Die Karte ist mit der Swipeable-Komponente umgeben und unterstützt Swipe-Gesten sowohl nach rechts als auch nach links. Beim Swipen nach rechts kann ein Button oder eine benutzerdefinierte Aktion angezeigt werden, was dem Nutzer schnelle Aktionsmöglichkeiten bietet. Zusätzlich kann die Karte optional per Klick ausgewählt werden, um weitere Interaktionen zu ermöglichen.
-
-\textbf{Fehlerbehandlung:}
-Das System behandelt Bildladefehler proaktiv, indem diese im Log ausgegeben werden, was bei der Fehlerdiagnose und -behebung hilft.
-
-\noindent\textbf{Verwendung:} ShoppingListItemCard eignet sich zur Darstellung von Produkten in einer Einkaufsliste mit Swipe- und Klickfunktionen, z.B. zum Löschen, Bearbeiten oder Auswählen eines Artikels. Sie ist flexibel und kann mit verschiedenen Aktionen erweitert werden.
+\noindent\textbf{Verwendung:}
+Die Card-Komponente wird innerhalb von Produktlisten eingesetzt, um einzelne Produkte übersichtlich und interaktiv darzustellen. Sie eignet sich besonders für Einkaufslisten oder Produktübersichten, bei denen Nutzer Produkte auswählen oder entfernen können. Die Komponente ist flexibel und kann in verschiedenen Kontexten wiederverwendet werden.
 
 \subsection{Explore}
 
@@ -441,6 +420,20 @@ Die Elemente sind optisch so angeordnet, wie die echten Produktdetails später e
 
 \subsubsection{NavigationBar(TopBar)}
 Die TopBar-Komponente stellt die obere Navigationsleiste der App dar und sorgt für eine konsistente Benutzerführung. Sie nimmt optional einen Titel und die Information entgegen, ob ein Zurück-Button angezeigt werden soll. Ist der Zurück-Button aktiv, kann der Nutzer zur vorherigen Seite zurückkehren. Andernfalls wird das Profilbild des aktuell angemeldeten Nutzers angezeigt, das als Button dient und beim Antippen zu den Einstellungen weiterleitet. Die Komponente verwendet React Native-Elemente für das Layout und Styling sowie Expo Router für die Navigation. Die Benutzerinformationen werden über Clerk eingebunden, sodass das Profilbild dynamisch geladen wird. Das Design ist flexibel und passt sich je nach Kontext an, wodurch die Komponente universell auf verschiedenen Screens eingesetzt werden kann.
+
+\subsubsection{SignOutButton}
+
+\noindent\textbf{Aufbau und Funktionsweise:}
+Die SignOutButton-Komponente ist eine React Native-Komponente, die die Abmeldung eines Nutzers aus der App ermöglicht. Sie verwendet das Clerk-Auth-System und ruft beim Klick auf den Button die signOut-Funktion auf. Nach erfolgreichem Logout wird der Nutzer automatisch zur Startseite weitergeleitet. Fehler beim Abmelden werden in der Konsole ausgegeben.
+
+\noindent\textbf{Darstellung:}
+Der Button ist horizontal aufgebaut und besteht aus einem roten Logout-Icon sowie dem Text \enquote{Sign out}. Das Design ist modern und passt sich je nach Plattform (iOS oder Android) an, um ein natives Erscheinungsbild zu gewährleisten. Die Farben und abgerundeten Ecken sorgen für eine klare visuelle Trennung.
+
+\noindent\textbf{Interaktive Elemente:}
+Das zentrale interaktive Element ist der Button selbst. Ein Klick darauf löst die Abmeldefunktion aus. Die Komponente reagiert auf Touch-Events und gibt visuelles Feedback durch die Gestaltung und Animationen.
+
+\noindent\textbf{Verwendung:}
+Die SignOutButton-Komponente wird überall dort eingesetzt, wo Nutzer die Möglichkeit haben sollen, sich aus der App abzumelden, beispielsweise im Profil- oder Einstellungsbereich. Sie sorgt für eine einfache und sichere Abmeldung und kann flexibel in verschiedenen Bereichen der App eingebunden werden.
 
 \subsubsection{ButtonSquare}
 Die ButtonSquare-Komponente ist ein quadratischer, interaktiver Button, der in der App als Floating Action Button (FAB) fungiert. Er wird in der Regel am unteren rechten Bildschirmrand platziert und hebt sich durch seine Größe und Form von anderen UI-Elementen ab. Der Button kann mit einem Icon versehen werden, das eine spezifische Aktion repräsentiert, wie beispielsweise das Hinzufügen eines neuen Elements oder das Starten einer Suche. Die Komponente nutzt Pressable für die Interaktivität und bietet visuelles Feedback bei Berührung. Sie ist so gestaltet, dass sie sowohl auf iOS als auch auf Android gut aussieht und funktioniert, und kann leicht in verschiedene Screens integriert werden.
