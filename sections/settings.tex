@@ -1,0 +1,33 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SETTINGS-SCREEN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Einstellungen und Nutzerprofil}
+
+\subsection{Nutzerperspektive}
+
+Der Einstellungen-Screen stellt eine zentrale Steuerzentrale für den Nutzer dar. Hier kann er seine Profildaten einsehen, auf Hilfeseiten zugreifen, zu archivierten Listen oder zur Einkaufsliste navigieren oder sich aus der App ausloggen.
+
+Gestalterisch ist der Screen in mehrere klar voneinander abgegrenzte Bereiche unterteilt: ein Profilbereich, die eigentlichen Einstellungseinträge, ein Support-Block und der Logout-Bereich. Im oberen Bereich befindet sich das runde Profilbild des Nutzers, ergänzt durch Name und E-Mail-Adresse, sowie ein Chevron-Icon, das auf Interaktivität hinweist.
+
+Darunter folgen mehrere Einstellungseinträge in Form von \texttt{SettingsRows}, die jeweils mit einem Icon, einem Titel und ggf. einem Untertitel versehen sind. Diese werden visuell voneinander getrennt durch weiße Hintergründe, Schatten und abgerundete Kanten. Ein durchgängiges Icon-Design sorgt für visuelle Konsistenz.
+
+Der User Flow ist einfach: Der Nutzer gelangt über den Bottom Tab \enquote{Settings} zum Screen. Von dort kann er durch Antippen seines Profils das \texttt{UserProfile}-Modal von \texttt{Clerk} öffnen, zum Archiv navigieren oder sich abmelden. Einträge wie \enquote{Shopping Lists} oder \enquote{Support} sind aktuell noch nicht mit konkreter Funktion hinterlegt.
+
+\subsection{Technische Perspektive}
+
+Die Hauptkomponente \texttt{SettingsScreen} wird ergänzt durch die beiden Subkomponenten \texttt{SettingsGroup} (als Wrapper für gruppierte Einträge) und \texttt{SettingsRow} (für einzelne Einstellungen). Ergänzt wird dies durch die \texttt{TopBar} sowie den \texttt{SignOutButton}.
+
+Die wichtigsten Abhängigkeiten umfassen:
+
+\begin{itemize}
+    \item \texttt{@clerk/clerk-expo} – für Benutzerinformationen und Sessionhandling
+    \item \texttt{lucide-react-native} – für einheitliche Icons
+    \item \texttt{expo-router} – zur Navigation zwischen den Screens
+    \item klassische \texttt{React Native}-Komponenten – für Layout und Verhalten
+\end{itemize}
+
+Die User-Daten werden über \texttt{useUser()} geladen, während \texttt{useClerk()} Funktionen wie \texttt{openUserProfile()} bereitstellt. Die Navigation erfolgt über \texttt{router.push()}. Die \texttt{SettingsRow} wird dynamisch über \texttt{Props} gesteuert – etwa für Titel, Icon, Farben und Interaktionsverhalten.
+
+Herausfordernd ist hier insbesondere die dynamische Gestaltung der Zeilen – z.\,B. abgerundete Ecken nur für die erste und letzte Zeile, Trennlinien dazwischen – sowie das fehlerfreie Laden und Anzeigen des Nutzerbilds. Die visuelle Trennung durch Gruppenkomponenten sorgt dabei für eine bessere Wartbarkeit und Klarheit. Eine \texttt{ScrollView} mit deaktiviertem Scroll Indicator sorgt für eine unauffällige, integrierte Darstellung.
+
+Der Screen bleibt bewusst schlank in Funktionalität und Design. Er orientiert sich visuell an nativen iOS-Konventionen mit weichen Kanten, klaren Icons und einem strukturierten Aufbau, um die Orientierung und Bedienbarkeit zu maximieren.

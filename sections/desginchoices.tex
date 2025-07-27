@@ -1,0 +1,39 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DESIGNPHILOSOPHIE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Designphilosophie und Gestaltungskonzept}
+\renewcommand{\authorinitials}{FK}
+
+\section{Überblick}
+
+Die Designphilosophie unserer App orientiert sich stark an einem ganzheitlichen Nutzererlebnis. Ziel war es nicht nur, funktionale Anforderungen zu erfüllen, sondern eine emotionale, intuitive und visuell konsistente Oberfläche zu schaffen. Im Zentrum steht dabei die Analogie zum analogen Einkaufszettel – diese durchzieht das UI-Design sowohl visuell als auch strukturell.
+
+\section{Gestalterische Prinzipien}
+
+Unsere gestalterischen Leitlinien greifen gezielt ineinander, um eine schlüssige Nutzererfahrung mit klarer visueller Identität zu schaffen. Den Ausgangspunkt bildet dabei die bewusste Entscheidung für eine \textbf{Zettel-Optik}, die sich durch runde, schattenwerfende Container und eine helle, zurückhaltende Farbgebung manifestiert. Diese Analogie zum klassischen Einkaufszettel unterstützt nicht nur die Orientierung, sondern verleiht der App auch einen vertrauten Charakter.
+
+Diese visuelle Idee wird durch \textbf{typografische Konsistenz} verstärkt. Einheitliche Schriftarten, Größen und Farben – insbesondere die klar lesbare Schriftart \texttt{SpaceMono} – sorgen für Wiedererkennung und stärken die visuelle Ruhe des Interfaces. Damit Inhalte wie Produktinformationen und Preise im Vordergrund bleiben, wurde gezielt auf dekorative oder überfrachtete UI-Elemente verzichtet.
+
+Ein zentrales Mittel zur Aufrechterhaltung dieser Gestaltung ist die konsequente Verwendung von \texttt{ScrollViews} mit identischem Aufbau in jedem Screen. Diese einheitliche Scrollstruktur vermittelt ein Gefühl der Kohärenz im Navigationsverhalten, unabhängig davon, ob der Nutzer sich auf der Home-Seite, im Archiv oder im Detailbereich befindet.
+
+\section{Modularität und Komponentenstrategie}
+
+Zur Unterstützung der Wartbarkeit und Konsistenz setzen wir auf \textbf{modular aufgebaute, wiederverwendbare UI-Komponenten}. Beispiele hierfür sind:
+
+\begin{itemize}
+    \item \texttt{Card}
+    \item \texttt{ShoppingListItem}
+    \item \texttt{ButtonSquare}
+\end{itemize}
+
+Diese Bausteine folgen denselben Designrichtlinien und ermöglichen es, neue Screens mit minimalem Gestaltungsaufwand in das Gesamtdesign zu integrieren.
+
+\section{Interaktion und Mikroanimationen}
+
+Für gezielte Interaktionsführung sorgen dezente Animationen – etwa das Ein- und Ausblenden von Bedienelementen bei Scrollbewegungen. Diese wurden mithilfe von \texttt{react-native-reanimated} umgesetzt. In Kombination mit klaren \textbf{farblichen Kontrasten} für Buttons und Icons entstehen aufgeräumte, strukturierte Layouts, in denen Nutzer schnell erkennen, wo und wie sie interagieren können.
+
+Auch Details wurden sorgfältig bedacht: Alle verwendeten Icons stammen aus der \texttt{Lucide}-Bibliothek und erscheinen in einheitlicher Größe und Stärke. Interaktive Elemente wurden zudem so gestaltet, dass sie den üblichen Anforderungen an \textbf{Touchzielgrößen} auf mobilen Geräten entsprechen.
+
+\section{Fazit}
+
+All diese Prinzipien zahlen auf ein übergeordnetes Ziel ein: ein \textbf{minimalistisches Design}, das die Produkte und Inhalte – also den eigentlichen Zweck der App – in den Mittelpunkt stellt, ohne durch unnötige visuelle Elemente abzulenken.
