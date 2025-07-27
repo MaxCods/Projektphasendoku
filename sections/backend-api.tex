@@ -352,13 +352,13 @@ export const getShoppingListItems = async (userId: string) => {
 
 \section{Performance und Skalierung}
 
-Das Backend implementiert bereits einige \textbf{Performance-Optimierungen}. Prisma's \texttt{include}-Funktionalität ermöglicht das schon kurz erwähnte \textbf{Eager Loading}, wodurch verwandte Daten in einer einzigen Abfrage geladen werden können. Dies reduziert die Anzahl der Datenbankzugriffe \textbf{erheblich}. Zusätzlich übernimmt Prisma automatisch das \textbf{Connection Pooling} und verwaltet die Datenbankverbindungen effizient. Die \textbf{stateless-Architektur} des Backends ermöglicht es, dass mehrere Instanzen parallel laufen können, ohne dass Daten zwischen ihnen geteilt werden müssen.
+Das Backend implementiert bereits einige \textbf{Performance-Optimierungen}. Prisma's \texttt{include}-Funktionalität ermöglicht das schon kurz erwähnte \textbf{Eager Loading}, wodurch verwandte Daten in einer einzigen Abfrage geladen werden können. Dies reduziert die Anzahl der Datenbankzugriffe erheblich. Zusätzlich übernimmt Prisma automatisch das \textbf{Connection Pooling} und verwaltet die Datenbankverbindungen effizient. Die \textbf{stateless-Architektur} des Backends ermöglicht es, dass mehrere Instanzen parallel laufen können, ohne dass Daten zwischen ihnen geteilt werden müssen.
 
-Für zukünftige Skalierung könnten weitere Optimierungen implementiert werden. \textbf{Horizontal Scaling} durch Load Balancing würde es ermöglichen, mehrere Backend-Instanzen hinter einem Load Balancer zu betreiben. Die Datenbank könnte durch \textbf{Read-Replicas} erweitert werden, um Leseoperationen zu verteilen und die Hauptdatenbank zu entlasten. \textbf{Redis-Integration} für Caching würde häufig abgerufene Daten im Speicher halten und die Antwortzeiten \textbf{deutlich verbessern}. Zusätzlich könnten \textbf{Datenbankindizes} für häufig verwendete Abfragen optimiert werden.
+Für zukünftige Skalierung könnten weitere Optimierungen implementiert werden. \textbf{Horizontal Scaling} durch Load Balancing würde es ermöglichen, mehrere Backend-Instanzen hinter einem Load Balancer zu betreiben. Die Datenbank könnte durch \textbf{Read-Replicas} erweitert werden, um Leseoperationen zu verteilen und die Hauptdatenbank zu entlasten. \textbf{Redis-Integration} für Caching würde häufig abgerufene Daten im Speicher halten und die Antwortzeiten deutlich verbessern. Zusätzlich könnten \textbf{Datenbankindizes} für häufig verwendete Abfragen optimiert werden.
 
 \section{Sicherheitsaspekte}
 
-Das Backend implementiert umfassende \textbf{Sicherheitsmaßnahmen} auf mehreren Ebenen. Die \textbf{Authentifizierung} erfolgt über Clerk, der die \textbf{JWT-Token-Validierung} und das \textbf{Session-Management} übernimmt. Jeder API-Request muss einen gültigen Bearer-Token enthalten, aus dem die \textbf{User-ID} extrahiert wird. Diese User-ID wird dann für alle Datenbankoperationen verwendet, wodurch eine strikte \textbf{User-Isolation} gewährleistet ist, Benutzer können nur auf ihre eigenen Daten zugreifen.
+Das Backend implementiert umfassende \textbf{Sicherheitsmaßnahmen} auf mehreren Ebenen. Die \textbf{Authentifizierung} erfolgt über Clerk, der die \textbf{JWT-Token-Validierung} und das \textbf{Session-Management} übernimmt. Jeder API-Request muss einen gültigen Bearer-Token enthalten, aus dem die User-ID extrahiert wird. Diese User-ID wird dann für alle Datenbankoperationen verwendet, wodurch eine strikte \textbf{User-Isolation} gewährleistet ist, Benutzer können nur auf ihre eigenen Daten zugreifen.
 
 Auf technischer Ebene bietet \textbf{TypeScript-Typisierung} bereits zur Kompilierzeit eine erste Validierung der Eingabedaten. Das \textbf{Prisma ORM} verhindert automatisch \textbf{SQL-Injection}-Angriffe durch parametrisierte Abfragen. Die \textbf{CORS-Konfiguration} schützt vor unerwünschten Cross-Origin-Requests. Das zentrale \textbf{Error-Handling} stellt sicher, dass keine sensiblen Informationen in Fehlermeldungen preisgegeben werden. Für zukünftige Erweiterungen könnten \textbf{Rate Limiting} zum Schutz vor DDoS-Angriffen und erzwungene \textbf{HTTPS-Verschlüsselung} implementiert werden.
 
@@ -366,33 +366,11 @@ Auf technischer Ebene bietet \textbf{TypeScript-Typisierung} bereits zur Kompili
 
 \subsection{Umgebungskonfiguration}
 
-Das Backend nutzt Umgebungsvariablen für Konfiguration:
-
-\begin{lstlisting}[language=bash,caption={Umgebungsvariablen}]
-# Datenbank
-DATABASE_URL="postgresql://user:password@localhost:5432/shopping_app"
-
-# Clerk Authentication
-CLERK_SECRET_KEY="sk_test_..."
-CLERK_PUBLISHABLE_KEY="pk_test_..."
-
-# Server
-PORT=3001
-NODE_ENV=production
-\end{lstlisting}
+Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \textbf{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \textbf{CLERK\_SECRET\_KEY} und \textbf{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \textbf{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
 
 \subsection{Build und Deployment}
 
-\begin{lstlisting}[language=json,caption={Package.json Scripts}]
-{
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "jest"
-  }
-}
-\end{lstlisting}
+Das Backend wird über \textbf{TypeScript-Kompilierung} in JavaScript-Code umgewandelt. Der \textbf{Build-Prozess} mit \texttt{npm run build} kompiliert den TypeScript-Code und erstellt eine optimierte Version im \texttt{dist}-Verzeichnis. Für das \textbf{Deployment} wird der kompilierte Code zusammen mit den Umgebungsvariablen in die Zielumgebung übertragen. Der Server wird dann mit \texttt{npm start} gestartet, der den kompilierten Code aus \texttt{dist/index.js} ausführt. Die \textbf{API-Endpunkte} sind dann über HTTP/HTTPS erreichbar und können von der Frontend-App angesprochen werden. Wichtig ist, dass die Datenbankverbindung und alle Umgebungsvariablen korrekt konfiguriert sind, damit die API ordnungsgemäß funktioniert. Für die \textbf{Skalierung} können mehrere Backend-Instanzen parallel betrieben werden, da das Backend stateless ist und keine lokalen Daten speichert.
 
 
 
@@ -419,15 +397,43 @@ export default config;
 
 \subsection{Authentifizierungstests}
 
-Die Authentifizierung wird umfassend getestet. Die Tests überprüfen verschiedene Szenarien: Fehlende Authorization-Header führen zu 401-Fehlern, ungültige Tokens werden korrekt abgelehnt und gültige Tokens ermöglichen den Zugriff auf geschützte Endpunkte. Diese Tests stellen sicher, dass die Sicherheitsmaßnahmen ordnungsgemäß funktionieren und unbefugte Zugriffe verhindert werden.
+Die \textbf{Authentifizierung} wird umfassend getestet. Die Tests überprüfen verschiedene Szenarien: Fehlende Authorization-Header führen zu 401-Fehlern, ungültige Tokens werden korrekt abgelehnt und gültige Tokens ermöglichen den Zugriff auf geschützte Endpunkte. Diese Tests stellen sicher, dass die Sicherheitsmaßnahmen ordnungsgemäß funktionieren und unbefugte Zugriffe verhindert werden.
 
 \subsection{Shopping List Integration Tests}
 
-Die Shopping List Funktionalität wird mit umfassenden Integration Tests abgedeckt. Diese Tests simulieren echte API-Aufrufe und überprüfen das gesamte System von der Request-Verarbeitung bis zur Datenbankoperation. Die Tests decken alle wichtigen Szenarien ab: Das Erstellen neuer Einkaufslisten, das Abrufen bestehender Listen, das Hinzufügen von Produkten sowie die Validierung von Eingabedaten. Besonders wichtig sind die Validierungstests, die sicherstellen, dass ungültige Eingaben wie Null-Werte, negative Mengen oder nicht-existierende Produkt-IDs korrekt abgelehnt werden. Alle Tests verwenden gültige Bearer-Tokens und simulieren authentifizierte Benutzeranfragen.
+Die Shopping List Funktionalität wird mit umfassenden \textbf{Integration Tests} abgedeckt. Diese Tests simulieren echte API-Aufrufe und überprüfen das gesamte System von der Request-Verarbeitung bis zur Datenbankoperation. Die Tests decken alle wichtigen Szenarien ab: Das Erstellen neuer Einkaufslisten, das Abrufen bestehender Listen, das Hinzufügen von Produkten sowie die Validierung von Eingabedaten. Besonders wichtig sind die Validierungstests, die sicherstellen, dass ungültige Eingaben wie Null-Werte, negative Mengen oder nicht-existierende Produkt-IDs korrekt abgelehnt werden. Die Test verwenden \texttt{'Bearer validToken'} als simulierten Token und führen so eine authentifizierte Benutzeranfragen durch.
+
+\begin{lstlisting}[style=typescriptstyle,caption={Shopping List Integration Test}]
+describe('Shopping List API', () => {
+  it('should add item to shopping list', async () => {
+    const response = await request(app)
+      .put('/api/shoppinglist/')
+      .set('Authorization', `Bearer validToken`)
+      .send({
+        variantId: 1,
+        quantity: 2
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.items).toHaveLength(1);
+    expect(response.body.items[0].quantity).toBe(2);
+  });
+
+  it('should reject invalid variant ID', async () => {
+    const response = await request(app)
+      .put('/api/shoppinglist/')
+      .set('Authorization', `Bearer validToken`)
+      .send({
+        variantId: 99999,
+        quantity: 1
+      });
+    expect(response.status).toBe(400);
+  });
+});
+\end{lstlisting}
 
 \subsection{Mocking-Strategien}
 
-Für isolierte und zuverlässige Tests werden verschiedene Mocking-Strategien eingesetzt. Die Clerk-Authentifizierung wird gemockt, um Tests ohne echte Authentifizierung durchführen zu können. Der Prisma-Client wird ebenfalls gemockt, um Datenbankoperationen zu simulieren und Tests unabhängig von der tatsächlichen Datenbank zu machen. Externe API-Calls werden ebenfalls gemockt, um Tests deterministisch und schnell zu halten.
+Die Tests verwenden eine Kombination aus \textbf{Mocking} und \textbf{echter Infrastruktur}. Die \textbf{Clerk-Authentifizierung} wird gemockt, um verschiedene Authentifizierungsszenarien zu simulieren und Test-User-IDs bereitzustellen. Die \textbf{echte Datenbank} wird für vollständige Integration Tests verwendet, was eine realistische Testumgebung gewährleistet. Die \textbf{Middleware-Pipeline} wird vollständig durchlaufen, wodurch alle Authentifizierungs- und Validierungsschritte getestet werden.
 
 \subsection{Test-Ausführung}
 
