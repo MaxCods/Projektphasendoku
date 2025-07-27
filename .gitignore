@@ -7,4 +7,6 @@
 # And not .gitignore itself
 !.gitignore
 
+# Include media directory and all its contents
 !media/
+!media/**
