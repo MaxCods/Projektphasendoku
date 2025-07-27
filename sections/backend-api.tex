@@ -451,11 +451,11 @@ npm test -- shoppingList.test.ts
 
 \subsection{Ausblick: Erweiterte Tests}
 
-Für eine vollständige Testabdeckung könnten in Zukunft weitere Tests implementiert werden. Dazu gehören vollständige CRUD-Operationen für Produkte, Store-Management und -Abruf, Service-Layer-Tests mit Mock-Datenbank, erweiterte Error-Handling-Tests, Performance-Tests für kritische Endpunkte sowie End-to-End-Tests für vollständige Workflows mit echter Datenbank.
+Das Backend fokussiert sich auf \textbf{Integration Tests} und verzichtet bewusst auf \textbf{Unit Tests}. Dies liegt daran, dass die meisten Backend-Funktionen stark mit der Datenbank und Authentifizierung verknüpft sind. Unit Tests würden umfangreiches Mocking der Datenbank und Authentifizierung erfordern, was die Tests komplexer und weniger aussagekräftig machen würde. Die Integration Tests decken bereits die wichtigsten Szenarien ab und bieten eine realistische Testumgebung. Für zukünftige Erweiterungen könnten \textbf{Performance-Tests} für kritische Endpunkte und \textbf{Load-Tests} für die Skalierbarkeit implementiert werden.
 
-\section{Zusammenfassung}
+\section{Fazit}
 
-Das Backend der Smart Shopping App implementiert eine moderne, skalierbare Architektur mit Express.js, TypeScript und Prisma. Die API folgt RESTful-Prinzipien und bietet eine vollständige Authentifizierung über Clerk. Durch das Controller-Service-Pattern wird eine klare Trennung der Verantwortlichkeiten gewährleistet, während umfassende Tests die Codequalität sicherstellen.
+Das Backend der Smart Shopping App implementiert eine moderne, skalierbare Architektur mit Express.js, TypeScript und Prisma. Die API folgt RESTful-Prinzipien und bietet eine vollständige Authentifizierung über Clerk. Durch das Controller-Service-Pattern wird eine klare Trennung der Verantwortlichkeiten gewährleistet, während Integration Tests die Ausführbarkeit sicherstellen.
 
 Die Architektur ist darauf ausgelegt, zukünftige Erweiterungen wie Caching, Rate Limiting und erweiterte Sicherheitsfeatures einfach zu integrieren.
 
