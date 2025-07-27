@@ -752,12 +752,9 @@ Die konsequente Migration auf eine Prisma-verwaltete PostgreSQL-Datenbank erwies
 Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den technischen Funktionalitäten der Smart Shopping App her. Sie spielt eine zentrale Rolle bei der täglichen Nutzung der App, da sie das Hinzufügen von Produkten zur Einkaufsliste, das Anzeigen und Bearbeiten der Listen sowie die Darstellung der Preisinformationen und Marktvergleiche ermöglicht.
 
 \section{Grundlegende Anforderungen an die UI}
-\begin{itemize}
-    \item \textbf{Intuitive Bedienbarkeit:} Die Navigation und Bedienung der App soll für alle Nutzer:innen verständlich und schnell erlernbar sein.
-    \item \textbf{Responsives Design:} Die Oberfläche adaptiert sich auf unterschiedliche Bildschirmgrößen (Smartphone, Tablet, Desktop).
-    \item \textbf{Echtzeit-Feedback:} Preisvergleiche und Marktvorschläge sollen unmittelbar nach Eingabe oder Änderung der Einkaufsliste angezeigt werden.
-    \item \textbf{Modulare Architektur:} Die UI ist so konzipiert, dass sie sich um weitere Features (z.B. zusätzliche Märkte oder Angebotsfunktionen) erweitern lässt.
-\end{itemize}
+Die Benutzeroberfläche der Smart Shopping App muss verschiedene grundlegende Anforderungen erfüllen, um eine optimale Nutzererfahrung zu gewährleisten. Eine intuitive Bedienbarkeit steht dabei im Vordergrund, sodass die Navigation und Bedienung der App für alle Nutzer:innen verständlich und schnell erlernbar ist. Das responsive Design stellt sicher, dass sich die Oberfläche an unterschiedliche Bildschirmgrößen anpasst, sei es auf Smartphones, Tablets oder Desktop-Geräten.
+
+Ein weiterer wichtiger Aspekt ist das Echtzeit-Feedback, durch das Preisvergleiche und Marktvorschläge unmittelbar nach Eingabe oder Änderung der Einkaufsliste angezeigt werden. Die modulare Architektur der UI ermöglicht es, die Anwendung um weitere Features wie zusätzliche Märkte oder Angebotsfunktionen zu erweitern, ohne die bestehende Struktur grundlegend ändern zu müssen.
 
 \section{Mockups und zentrale Ansichten}
 % Hier können später Skizzen/Mobile Screenshots oder Diagramme eingefügt werden.
@@ -779,13 +776,9 @@ Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den tech
 \end{figure}
 
 \section{Beschreibung zentraler UI-Elemente}
-\begin{enumerate}
-    \item \textbf{Einkaufsliste:} Übersicht über die gewählten Produkte, Mengenanpassung, Möglichkeit zum Abhaken gekaufter Artikel.
-    \item \textbf{Marktvergleichsübersicht:} Darstellung, bei welchem Markt die aktuelle Liste am günstigsten ist und Übersicht über Einzelpreise.
-    \item \textbf{Produktsuche/Autocomplete:} Komfortable Suche mit Vorschlägen, um das Hinzufügen neuer Produkte zu beschleunigen.
-    \item \textbf{Detailsicht:} Zeigt weitere Informationen zum Produkt (z.B. Angaben aus Scraping/Enrichment) oder Angebotspreise.
-    \item \textbf{Nutzerprofil- und Einstellungen:} (z.B. bevorzugte Märkte, Filteroptionen)
-\end{enumerate}
+Die Benutzeroberfläche der Smart Shopping App besteht aus mehreren zentralen Elementen, die eine optimale Nutzererfahrung gewährleisten. Die Einkaufsliste bietet eine übersichtliche Darstellung der gewählten Produkte und ermöglicht es den Nutzer:innen, Mengen anzupassen und gekaufte Artikel abzuhaken. Die Marktvergleichsübersicht zeigt transparent an, bei welchem Markt die aktuelle Liste am günstigsten ist, und bietet eine detaillierte Übersicht über die Einzelpreise der Produkte.
+
+Ein weiteres wichtiges Element ist die Produktsuche mit Autocomplete-Funktion, die das Hinzufügen neuer Produkte durch intelligente Vorschläge erheblich beschleunigt. Die Detailsicht stellt zusätzliche Produktinformationen zur Verfügung, einschließlich der durch Scraping und Enrichment gewonnenen Daten sowie aktueller Angebotspreise. Schließlich ermöglicht der Bereich für Nutzerprofil und Einstellungen die Personalisierung der App durch die Auswahl bevorzugter Märkte und verschiedener Filteroptionen.
 
 \section{Geplante Weiterentwicklungen}
 % Hier können noch weitere Features oder Ideen wie Barcode-Scanner, ortsbasierte Marktempfehlungen etc. ergänzt werden.
@@ -796,15 +789,7 @@ Die Benutzeroberfläche stellt die Verbindung zwischen Nutzer:innen und den tech
 \subsection{Nutzerperspektive}
 
 \subsubsection{Zweck des Screens}
-Der Screen dient als zentrale Übersicht für die Einkaufsliste des Nutzers. Hier kann der Nutzer:
-\begin{itemize}
-    \item Seine aktuelle Einkaufsliste einsehen
-    \item Einzelne Produkte aus der Liste entfernen
-    \item Die gesamte Liste archivieren
-    \item Eine neue Einkaufsliste anlegen, falls noch keine existiert
-    \item Den Gesamtpreis der Liste sehen
-    \item Zur Detailansicht der Liste wechseln
-\end{itemize}
+Der Home-Screen dient als zentrale Übersicht für die Einkaufsliste des Nutzers und stellt den wichtigsten Interaktionspunkt der Anwendung dar. Hier kann der Nutzer seine aktuelle Einkaufsliste einsehen und einzelne Produkte aus der Liste entfernen. Darüber hinaus besteht die Möglichkeit, die gesamte Liste zu archivieren oder eine neue Einkaufsliste anzulegen, falls noch keine existiert. Der Screen zeigt außerdem den Gesamtpreis der Liste an und ermöglicht den direkten Wechsel zur Detailansicht der Liste.
 
 \subsubsection{UI/UX-Beschreibung}
 
@@ -819,24 +804,15 @@ Der Screen dient als zentrale Übersicht für die Einkaufsliste des Nutzers. Hie
 \end{itemize}
 
 \noindent\textbf{Interaktive Elemente:}
-\begin{itemize}
-    \item Produkt löschen: Über den Lösch-Button auf jeder Produktkarte
-    \item Einkaufsliste archivieren: Über einen Button (nicht im Ausschnitt, aber im Code vorgesehen)
-    \item Neue Liste anlegen: Über den "Create Shopping List"-Button
-    \item Zur Detailansicht wechseln: Über den Button mit Einkaufswagen-Icon
-\end{itemize}
+Die Benutzerinteraktion erfolgt über verschiedene gut erreichbare Elemente. Produkte können über den Lösch-Button auf jeder Produktkarte entfernt werden, während die gesamte Einkaufsliste über einen entsprechenden Button archiviert werden kann. Das Anlegen neuer Listen erfolgt über den "Create Shopping List"-Button, und der Wechsel zur Detailansicht ist über den Button mit Einkaufswagen-Icon möglich.
 
 \subsubsection{User Flow}
 
 \textbf{Von welchem Screen kommt der Nutzer hierher?}
-Meistens über die Tab-Navigation als Startscreen oder nach dem Login.
+Der Nutzer gelangt meistens über die Tab-Navigation als Startscreen oder nach dem Login auf den Home-Screen.
 
 \noindent\textbf{Wohin geht es von hier aus?}
-\begin{itemize}
-    \item Zur Detailansicht der Einkaufsliste (/listDetails)
-    \item Zu Produktdetails (über die Produktkarte, falls implementiert)
-    \item Archivieren oder neue Liste anlegen
-\end{itemize}
+Vom Home-Screen aus stehen dem Nutzer verschiedene Navigationsmöglichkeiten zur Verfügung. Er kann zur Detailansicht der Einkaufsliste wechseln, indem er die entsprechende Option auswählt. Darüber hinaus besteht die Möglichkeit, zu Produktdetails zu navigieren, sofern diese Funktionalität über die Produktkarten implementiert ist. Weitere Optionen umfassen das Archivieren der aktuellen Liste oder das Anlegen einer neuen Liste.
 
 \subsection{Technische Perspektive}
 
@@ -858,7 +834,7 @@ Meistens über die Tab-Navigation als Startscreen oder nach dem Login.
 \end{itemize}
 
 \noindent\textbf{Services/APIs:}
-api-Service für alle Backend-Requests (z.B. getShoppingListItems, createShoppingList, deleteFromShoppingList, archiveShoppingList)
+Die Kommunikation mit dem Backend erfolgt über den api-Service, der alle Backend-Requests abwickelt. Dieser umfasst Funktionen wie getShoppingListItems zum Abrufen der Listenelemente, createShoppingList zum Erstellen neuer Listen, deleteFromShoppingList zum Entfernen von Produkten und archiveShoppingList zum Archivieren von Listen.
 
 \subsubsection{Wichtige Funktionen/Methoden}
 \begin{itemize}
@@ -871,12 +847,9 @@ api-Service für alle Backend-Requests (z.B. getShoppingListItems, createShoppin
 \end{itemize}
 
 \subsubsection{Besondere Herausforderungen}
-\begin{itemize}
-    \item \textbf{Performance-Optimierung:} Floating Buttons werden mit Reanimated animiert, um ein flüssiges UI zu gewährleisten.
-    \item \textbf{Fehlerbehandlung:} Umfangreiche Alerts und Fallbacks, falls API-Requests fehlschlagen.
-    \item \textbf{User Experience:} Unterschiedliche UI-Zustände (keine Liste, leere Liste, gefüllte Liste) werden klar unterschieden und kommuniziert.
-    \item \textbf{Synchronisation:} Die Liste wird bei jedem Fokus auf den Screen neu geladen (useFocusEffect), um immer aktuelle Daten zu zeigen.
-\end{itemize}
+Bei der Entwicklung des Home-Screens entstanden verschiedene technische Herausforderungen, die spezielle Lösungsansätze erforderten. Die Performance-Optimierung wurde durch den Einsatz von Reanimated für die Animation der Floating Buttons erreicht, um ein flüssiges Benutzererlebnis zu gewährleisten. Eine umfangreiche Fehlerbehandlung mit Alerts und Fallbacks stellt sicher, dass die Anwendung auch bei fehlgeschlagenen API-Requests stabil funktioniert.
+
+Ein besonderer Fokus lag auf der User Experience, wobei unterschiedliche UI-Zustände wie das Fehlen einer Liste, eine leere Liste oder eine gefüllte Liste klar unterschieden und dem Nutzer verständlich kommuniziert werden. Die Synchronisation der Daten wird durch das automatische Neuladen der Liste bei jedem Fokus auf den Screen mittels useFocusEffect gewährleistet, sodass immer die aktuellsten Daten angezeigt werden.
 
 \section{Explore-Screen}
 \label{sec:explore_screen}
@@ -884,7 +857,7 @@ api-Service für alle Backend-Requests (z.B. getShoppingListItems, createShoppin
 \subsection{Nutzerperspektive}
 
 \subsubsection{Zweck des Screens}
-Der Explore-Screen dient dazu, dem Nutzer eine Übersicht über Produktkategorien und verfügbare Supermärkte zu geben. Hier kann der Nutzer gezielt nach Produkten suchen, Kategorien durchstöbern oder Angebote von bestimmten Märkten anzeigen lassen.
+Der Explore-Screen dient dazu, dem Nutzer eine strukturierte Übersicht über Produktkategorien und verfügbare Supermärkte zu bieten. Dieser Screen ermöglicht es dem Nutzer, gezielt nach Produkten zu suchen, verschiedene Kategorien zu durchstöbern oder Angebote von bestimmten Märkten anzeigen zu lassen. Dadurch wird eine intuitive Navigation durch das gesamte Produktsortiment der App gewährleistet.
 
 \subsubsection{UI/UX-Beschreibung}
 
@@ -898,21 +871,14 @@ Der Explore-Screen dient dazu, dem Nutzer eine Übersicht über Produktkategorie
 \end{itemize}
 
 \noindent\textbf{Interaktive Elemente:}
-\begin{itemize}
-    \item 'Add Products'-Button: Öffnet die Produktsuche.
-    \item Kategorien und Stores: Antippbar, führen zu einer gefilterten Produktsuche.
-\end{itemize}
+Die Benutzerinteraktion erfolgt über zwei Hauptkategorien von Elementen. Der 'Add Products'-Button öffnet die Produktsuche und ermöglicht den direkten Einstieg in die Produktauswahl. Zusätzlich sind sowohl Kategorien als auch Stores als anklickbare Elemente gestaltet, die zu einer gefilterten Produktsuche führen und dem Nutzer eine zielgerichtete Navigation ermöglichen.
 
 \subsubsection{User Flow}
 
 \textbf{Einstieg:} Der Nutzer gelangt meist von einem Tab-Menü oder der Hauptnavigation auf diesen Screen.
 
 \noindent\textbf{Von hier aus kann der Nutzer:}
-\begin{itemize}
-    \item Über den "Add Products"-Button zur Produktsuche navigieren.
-    \item Über eine Kategorie oder einen Store gezielt Produkte filtern und anzeigen lassen.
-    \item Nach Auswahl wird der Nutzer zur Such-/Produktübersicht weitergeleitet.
-\end{itemize}
+Der Explore-Screen bietet verschiedene Navigationsmöglichkeiten für den Nutzer. Über den "Add Products"-Button kann er direkt zur Produktsuche navigieren und mit der Zusammenstellung seiner Einkaufsliste beginnen. Alternativ kann er über eine Kategorie oder einen Store gezielt Produkte filtern und anzeigen lassen, um spezifische Angebote zu finden. Nach der Auswahl wird der Nutzer zur Such- oder Produktübersicht weitergeleitet, wo er seine Auswahl verfeinern kann.
 
 \subsection{Technische Perspektive}
 
@@ -943,11 +909,7 @@ Der Explore-Screen dient dazu, dem Nutzer eine Übersicht über Produktkategorie
 \end{itemize}
 
 \subsubsection{Besondere Herausforderungen}
-\begin{itemize}
-    \item Dynamisches Laden und Anzeigen der Stores mit Farbcodierung.
-    \item Fehlerbehandlung beim Laden der Stores (Alert bei Fehler).
-    \item Übersichtliche und intuitive UI trotz vieler Auswahlmöglichkeiten.
-\end{itemize}
+Die Entwicklung des Explore-Screens brachte verschiedene technische Herausforderungen mit sich. Das dynamische Laden und Anzeigen der Stores mit individueller Farbcodierung erforderte eine flexible Architektur, die eine einheitliche Darstellung bei unterschiedlichen Datenquellen gewährleistet. Eine robuste Fehlerbehandlung beim Laden der Stores wurde implementiert, die dem Nutzer mittels Alert-Nachrichten bei Problemen entsprechendes Feedback gibt. Zusätzlich stellte die Gestaltung einer übersichtlichen und intuitiven Benutzeroberfläche trotz der vielen Auswahlmöglichkeiten eine besondere Herausforderung dar, die durch eine durchdachte Kategorisierung und visuelle Hierarchie gelöst wurde.
 
 \section{Search-Screen}
 \label{sec:search_screen}
@@ -955,7 +917,7 @@ Der Explore-Screen dient dazu, dem Nutzer eine Übersicht über Produktkategorie
 \subsection{Nutzerperspektive}
 
 \subsubsection{Zweck des Screens}
-Der Nutzer kann auf diesem Screen gezielt nach Produkten suchen, Filter anwenden (Kategorie, Store) und Produkte zur Einkaufsliste hinzufügen. Ziel ist es, schnell und komfortabel passende Angebote zu finden.
+Der Search-Screen ermöglicht es dem Nutzer, gezielt nach Produkten zu suchen, verschiedene Filter anzuwenden und gefundene Produkte zur Einkaufsliste hinzuzufügen. Das Hauptziel besteht darin, eine schnelle und komfortable Möglichkeit zu bieten, passende Angebote zu finden und die Produktauswahl durch Filter für Kategorie und Store zu verfeinern. Dieser Screen stellt somit das Herzstück der Produktsuche und -auswahl dar.
 
 \subsubsection{UI/UX-Beschreibung}
 
@@ -971,26 +933,15 @@ Der Nutzer kann auf diesem Screen gezielt nach Produkten suchen, Filter anwenden
 \end{itemize}
 
 \noindent\textbf{Interaktive Elemente:}
-\begin{itemize}
-    \item Suchleiste (Textinput)
-    \item Filter-Button (öffnet Modal)
-    \item Cancel-Button (setzt Suche zurück)
-    \item Produktkarten (klickbar, führen zu Detailansicht)
-    \item PlusCircle-Button (fügt Produkt zur Liste hinzu)
-    \item Filter-Modal mit MultiSelects und Buttons (Reset, Apply)
-\end{itemize}
+Der Search-Screen bietet dem Nutzer verschiedene Interaktionsmöglichkeiten für eine effiziente Produktsuche. Die Suchleiste als Textinput ermöglicht die direkte Eingabe von Suchbegriffen, während der Filter-Button ein Modal mit erweiterten Filteroptionen öffnet. Ein Cancel-Button setzt die aktuelle Suche zurück und ermöglicht einen Neustart. Die Produktkarten sind klickbar und führen zur Detailansicht der jeweiligen Artikel. Der PlusCircle-Button auf jeder Karte fügt das entsprechende Produkt direkt zur Einkaufsliste hinzu. Das Filter-Modal selbst enthält MultiSelects für die Auswahl sowie Reset- und Apply-Buttons für die Filterverwaltung.
 
 \subsubsection{User Flow}
-\textbf{Einstieg:} Der Nutzer kommt meist von einem Tab (z.B. "Explore") oder durch Auswahl eines Stores.
+\textbf{Einstieg:} Der Nutzer gelangt meist von einem Tab oder durch Auswahl eines Stores auf den Search-Screen.
 
-\noindent\textbf{Aktionen:} Nutzer kann suchen, filtern, Produkte zur Liste hinzufügen oder Details aufrufen.
+\noindent\textbf{Aktionen:} Auf diesem Screen kann der Nutzer verschiedene Aktionen durchführen, um seine Produktsuche zu optimieren. Er kann gezielt nach Produkten suchen, verschiedene Filter anwenden, gefundene Produkte direkt zur Einkaufsliste hinzufügen oder detaillierte Produktinformationen aufrufen.
 
 \noindent\textbf{Navigation:}
-\begin{itemize}
-    \item Klick auf ein Produkt → Detailansicht (/details/[id])
-    \item Filter anwenden → aktualisierte Produktliste
-    \item Zurück zu anderen Tabs oder Screens jederzeit möglich
-\end{itemize}
+Die Navigation vom Search-Screen aus bietet verschiedene Möglichkeiten. Ein Klick auf ein Produkt führt zur Detailansicht, während das Anwenden von Filtern eine aktualisierte Produktliste zur Verfügung stellt. Darüber hinaus ist die Rückkehr zu anderen Tabs oder Screens jederzeit möglich, um einen flexiblen Workflow zu gewährleisten.
 
 \subsection{Technische Perspektive}
 
@@ -1035,12 +986,9 @@ Der Nutzer kann auf diesem Screen gezielt nach Produkten suchen, Filter anwenden
 \end{itemize}
 
 \subsubsection{Besondere Herausforderungen}
-\begin{itemize}
-    \item \textbf{Filterlogik:} Kombination aus Suchbegriff, Kategorie- und Store-Filter, inklusive Sortierung.
-    \item \textbf{Performance:} Nutzung von FlashList für performantes Rendering großer Produktlisten.
-    \item \textbf{State-Synchronisation:} Automatisches Anwenden von Filtern bei Änderung der Auswahl, Synchronisation mit Context.
-    \item \textbf{UX:} Reset- und Apply-Logik im Filter-Modal, sofortige Rückmeldung bei Suche und Filterung.
-\end{itemize}
+Die Entwicklung des Search-Screens stellte verschiedene komplexe Herausforderungen dar, die innovative Lösungsansätze erforderten. Die Implementierung der Filterlogik erwies sich als besonders anspruchsvoll, da eine Kombination aus Suchbegriff, Kategorie- und Store-Filter inklusive intelligenter Sortierung realisiert werden musste. Für die Performance-Optimierung wurde FlashList eingesetzt, um auch bei großen Produktlisten ein performantes Rendering zu gewährleisten.
+
+Die State-Synchronisation stellte eine weitere Herausforderung dar, da Filter automatisch bei Änderung der Auswahl angewendet und gleichzeitig mit dem globalen Context synchronisiert werden müssen. Besondere Aufmerksamkeit galt auch der User Experience, wobei eine durchdachte Reset- und Apply-Logik im Filter-Modal implementiert wurde, die dem Nutzer sofortige Rückmeldung bei Suche und Filterung bietet.
 
 \section{UI-Komponenten}
 \label{sec:ui_komponenten}
@@ -1059,22 +1007,13 @@ Die Komponente ShoppingListItemCard stellt ein einzelnes Produkt in einer Einkau
 \end{itemize}
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Die Karte ist abgerundet, hat einen Schatten und zeigt das Produktbild, Name, Marke, Preis und Mengenangaben.
-    \item Das Bild wird links angezeigt, daneben die Produktdetails.
-\end{itemize}
+Die Karte präsentiert sich mit abgerundeten Ecken und einem Schatten, der ihr Tiefe verleiht. Sie zeigt das Produktbild, den Namen, die Marke, den Preis und die Mengenangaben in einer übersichtlichen Anordnung. Das Bild wird dabei links positioniert, während die Produktdetails rechts daneben angezeigt werden.
 
 \textbf{Interaktivität:}
-\begin{itemize}
-    \item Die Karte ist mit Swipeable umgeben und unterstützt Swipe-Gesten nach rechts und links.
-    \item Beim Swipen nach rechts kann ein Button oder eine benutzerdefinierte Aktion angezeigt werden.
-    \item Die Karte kann optional per Klick ausgewählt werden.
-\end{itemize}
+Die Karte ist mit der Swipeable-Komponente umgeben und unterstützt Swipe-Gesten sowohl nach rechts als auch nach links. Beim Swipen nach rechts kann ein Button oder eine benutzerdefinierte Aktion angezeigt werden, was dem Nutzer schnelle Aktionsmöglichkeiten bietet. Zusätzlich kann die Karte optional per Klick ausgewählt werden, um weitere Interaktionen zu ermöglichen.
 
 \textbf{Fehlerbehandlung:}
-\begin{itemize}
-    \item Bildladefehler werden im Log ausgegeben.
-\end{itemize}
+Das System behandelt Bildladefehler proaktiv, indem diese im Log ausgegeben werden, was bei der Fehlerdiagnose und -behebung hilft.
 
 \noindent\textbf{Verwendung:} ShoppingListItemCard eignet sich zur Darstellung von Produkten in einer Einkaufsliste mit Swipe- und Klickfunktionen, z.B. zum Löschen, Bearbeiten oder Auswählen eines Artikels. Sie ist flexibel und kann mit verschiedenen Aktionen erweitert werden.
 
@@ -1090,14 +1029,9 @@ Die Komponente CategorieField ist ein wiederverwendbares React Native-UI-Element
 \end{itemize}
 
 \noindent\textbf{Aufbau:}
-\begin{itemize}
-    \item Das Haupt-Element ist ein Pressable, das das gesamte Feld anklickbar macht.
-    \item Im Feld wird der Titel als weißer, fetter Text oben links angezeigt.
-    \item Falls ein Bild übergeben wird, erscheint es dekorativ rechts oben, leicht gedreht und abgerundet.
-    \item Das Layout nutzt Tailwind-Klassen und Style-Props für responsives und modernes Design.
-\end{itemize}
+Das Haupt-Element basiert auf einem Pressable, das das gesamte Feld anklickbar macht und eine intuitive Benutzerinteraktion ermöglicht. Im Feld wird der Titel als weißer, fetter Text oben links angezeigt, was eine gute Lesbarkeit gewährleistet. Falls ein Bild übergeben wird, erscheint es dekorativ rechts oben, leicht gedreht und abgerundet, was dem Design eine moderne Note verleiht. Das Layout nutzt Tailwind-Klassen und Style-Props für ein responsives und modernes Design, das sich an verschiedene Bildschirmgrößen anpasst.
 
-\noindent\textbf{Verwendung:} Die Komponente eignet sich, um Kategorien in einer Übersicht darzustellen, z.B. in einer Liste oder einem Grid. Sie kann individuell mit Titel, Bild und Farbe angepasst und mit einer Aktion beim Klick versehen werden.
+\noindent\textbf{Verwendung:} Die Komponente eignet sich hervorragend, um Kategorien in einer Übersicht darzustellen, beispielsweise in einer Liste oder einem Grid-Layout. Sie kann individuell mit Titel, Bild und Farbe angepasst und mit einer spezifischen Aktion beim Klick versehen werden, was eine hohe Flexibilität in der Anwendung ermöglicht.
 
 \subsubsection{CategorieGroup}
 Die Komponente CategorieGroup dient dazu, eine Gruppe von Kategorien als übersichtliche, responsive Felder darzustellen. Sie nimmt ein Array von Kategorien entgegen und ordnet diese in Reihen mit jeweils zwei Feldern an. Bei einer ungeraden Anzahl wird das erste Feld einzeln in einer eigenen Reihe angezeigt.
@@ -1111,19 +1045,12 @@ Die Komponente CategorieGroup dient dazu, eine Gruppe von Kategorien als übersi
 \end{itemize}
 
 \textbf{Logik:}
-\begin{itemize}
-    \item Prüft, ob Kategorien vorhanden sind.
-    \item Bei ungerader Anzahl wird das erste Element einzeln angezeigt, die restlichen werden paarweise gruppiert.
-    \item Jede Reihe wird als View mit zwei Feldern (CategorieField) dargestellt. Ist eine Reihe unvollständig, wird der Platz mit einem leeren Feld aufgefüllt.
-\end{itemize}
+Die Komponente führt zunächst eine Überprüfung durch, ob Kategorien vorhanden sind, bevor sie mit der Darstellung beginnt. Bei einer ungeraden Anzahl von Kategorien wird das erste Element einzeln angezeigt, während die restlichen Kategorien paarweise gruppiert werden. Jede Reihe wird als View mit zwei Feldern (CategorieField) dargestellt, wobei unvollständige Reihen mit einem leeren Feld aufgefüllt werden, um ein konsistentes Layout zu gewährleisten.
 
 \textbf{Layout:}
-\begin{itemize}
-    \item Nutzt Flexbox und Tailwind-Klassen für ein modernes, flexibles Design.
-    \item Die Felder sind gleichmäßig verteilt und haben Abstände zwischen den Reihen.
-\end{itemize}
+Das Design nutzt Flexbox und Tailwind-Klassen für ein modernes, flexibles Layout, das sich verschiedenen Bildschirmgrößen anpasst. Die Felder sind gleichmäßig verteilt und haben definierte Abstände zwischen den Reihen, was eine ansprechende visuelle Hierarchie schafft.
 
-\noindent\textbf{Verwendung:} CategorieGroup eignet sich, um Kategorien in einer übersichtlichen, klickbaren Grid-Ansicht darzustellen, z.B. auf einer Explore-Seite. Die Komponente ist flexibel und kann individuell mit Aktionen und Design-Optionen erweitert werden.
+\noindent\textbf{Verwendung:} CategorieGroup eignet sich optimal, um Kategorien in einer übersichtlichen, klickbaren Grid-Ansicht darzustellen, beispielsweise auf einer Explore-Seite. Die Komponente ist flexibel gestaltet und kann individuell mit verschiedenen Aktionen und Design-Optionen erweitert werden, um spezifische Anforderungen zu erfüllen.
 
 \subsubsection{SearchButton}
 Die Komponente SearchButton ist ein klickbarer Button, der wie ein Suchfeld aussieht, aber kein Eingabefeld ist. Sie zeigt ein Lupen-Icon und einen beschrifteten Text (Standard: "Add Products") an.
@@ -1137,13 +1064,9 @@ Die Komponente SearchButton ist ein klickbarer Button, der wie ein Suchfeld auss
 \end{itemize}
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Ein Pressable mit abgerundeten Ecken, weißem Hintergrund und grauem Rahmen.
-    \item Das Lupen-Icon (Search aus lucide-react-native) steht links neben dem Text.
-    \item Der Button reagiert visuell auf Druck (verringerte Opazität, Android Ripple-Effekt).
-\end{itemize}
+Die Komponente basiert auf einem Pressable mit abgerundeten Ecken, weißem Hintergrund und grauem Rahmen, was ihr ein sauberes und professionelles Aussehen verleiht. Das Lupen-Icon (Search aus lucide-react-native) wird links neben dem Text positioniert und signalisiert dem Nutzer die Suchfunktionalität. Der Button reagiert visuell auf Berührungen durch eine verringerte Opazität und bietet auf Android-Geräten zusätzlich einen Ripple-Effekt für taktiles Feedback.
 
-\noindent\textbf{Verwendung:} SearchButton eignet sich als auffälliger, interaktiver Button für Such- oder Hinzufügen-Aktionen, z.B. am oberen Rand einer Produktliste. Die Komponente ist einfach anpassbar und kann überall eingesetzt werden, wo ein solcher Button benötigt wird.
+\noindent\textbf{Verwendung:} SearchButton eignet sich hervorragend als auffälliger, interaktiver Button für Such- oder Hinzufügen-Aktionen, beispielsweise am oberen Rand einer Produktliste. Die Komponente ist einfach anpassbar und kann flexibel überall eingesetzt werden, wo ein solcher funktionaler Button benötigt wird.
 
 \subsection{Search}
 
@@ -1164,20 +1087,12 @@ Die Komponente SearchBar ist eine interaktive Suchleiste für React Native, die 
 Über das ref kann die Methode clear von außen aufgerufen werden, um das Suchfeld zu leeren und die Tastatur zu schließen.
 
 \textbf{Logik:}
-\begin{itemize}
-    \item Die Eingabe wird im State query gespeichert.
-    \item Jede Änderung im Textfeld ruft onSearch mit dem aktuellen Wert auf.
-    \item Ein Klick auf die Leiste fokussiert das Eingabefeld.
-    \item Die Methode clearSearch setzt das Feld zurück und schließt die Tastatur.
-\end{itemize}
+Die Eingabe wird im State query gespeichert und jede Änderung im Textfeld löst den onSearch-Callback mit dem aktuellen Wert aus. Ein Klick auf die Leiste fokussiert das Eingabefeld automatisch, was die Benutzerfreundlichkeit erhöht. Die Methode clearSearch setzt das Feld zurück und schließt die Tastatur, um eine saubere Benutzeroberfläche zu gewährleisten.
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Die Suchleiste besteht aus einem weißen, abgerundeten Container mit einem TextInput.
-    \item Das TextInput ist direkt fokussierbar und optisch schlicht gehalten.
-\end{itemize}
+Die Suchleiste besteht aus einem weißen, abgerundeten Container mit einem integrierten TextInput. Das TextInput ist direkt fokussierbar und optisch schlicht gehalten, um die Aufmerksamkeit auf die Eingabe zu lenken.
 
-\noindent\textbf{Verwendung:} SearchBar eignet sich für Suchfunktionen in Listen oder Übersichten. Sie kann von außen gesteuert werden (z.B. zum Zurücksetzen) und ist flexibel für verschiedene Anwendungsfälle einsetzbar.
+\noindent\textbf{Verwendung:} SearchBar eignet sich optimal für Suchfunktionen in Listen oder Übersichten. Sie kann von außen gesteuert werden, beispielsweise zum programmatischen Zurücksetzen, und ist flexibel für verschiedene Anwendungsfälle einsetzbar.
 
 \subsubsection{CustomMultiSelect}
 Die Komponente CustomMultiSelect ist ein individuell gestaltetes Mehrfach-Auswahlfeld für React Native, basierend auf react-native-element-dropdown. Sie ermöglicht die Auswahl mehrerer Optionen aus einer Liste und bietet eine Suchfunktion.
@@ -1197,19 +1112,12 @@ Die Komponente CustomMultiSelect ist ein individuell gestaltetes Mehrfach-Auswah
 \end{itemize}
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Die Dropdown-Liste zeigt alle Optionen an, ausgewählte werden mit einem Haken-Icon markiert.
-    \item Ausgewählte Items werden als Chips oberhalb der Liste angezeigt, mit Möglichkeit zum Entfernen (×).
-    \item Die Komponente ist optisch anpassbar und nutzt Tailwind-Klassen für modernes Design.
-\end{itemize}
+Die Dropdown-Liste zeigt alle verfügbaren Optionen übersichtlich an, wobei ausgewählte Elemente mit einem Haken-Icon markiert werden. Ausgewählte Items werden als Chips oberhalb der Liste angezeigt und bieten die Möglichkeit zum schnellen Entfernen über ein ×-Symbol. Die Komponente ist optisch anpassbar und nutzt Tailwind-Klassen für ein modernes Design, das sich harmonisch in verschiedene UI-Kontexte einfügt.
 
 \textbf{Logik:}
-\begin{itemize}
-    \item Die Auswahl und das Entfernen von Items werden über die Props gesteuert.
-    \item Die Suchfunktion filtert die angezeigten Optionen.
-\end{itemize}
+Die Auswahl und das Entfernen von Items werden vollständig über die Props gesteuert, was eine saubere Datenhaltung gewährleistet. Die integrierte Suchfunktion filtert die angezeigten Optionen in Echtzeit und verbessert die Benutzerfreundlichkeit bei großen Datensätzen.
 
-\noindent\textbf{Verwendung:} CustomMultiSelect eignet sich für Filter- und Auswahlfunktionen, bei denen mehrere Werte gleichzeitig gewählt werden können, z.B. zur Produktsuche oder Kategoriefilterung. Sie ist flexibel und einfach in verschiedene UI-Kontexte integrierbar.
+\noindent\textbf{Verwendung:} CustomMultiSelect eignet sich hervorragend für Filter- und Auswahlfunktionen, bei denen mehrere Werte gleichzeitig gewählt werden können, beispielsweise zur Produktsuche oder Kategoriefilterung. Sie ist flexibel gestaltet und lässt sich einfach in verschiedene UI-Kontexte integrieren.
 
 \subsection{(Produkt-)Details}
 
@@ -1228,14 +1136,9 @@ Die Komponente Field ist ein flexibler, klickbarer Button für React Native, der
 \end{itemize}
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Der Button ist abgerundet, horizontal ausgerichtet und zentriert.
-    \item Das Icon steht links, der Text (falls vorhanden) rechts daneben.
-    \item Der Hintergrund ist individuell anpassbar.
-    \item Die Klick-Animation wird über activeOpacity gesteuert.
-\end{itemize}
+Der Button präsentiert sich mit abgerundeten Ecken und ist horizontal ausgerichtet und zentriert angeordnet. Das Icon wird links positioniert, während der Text, falls vorhanden, rechts daneben platziert wird. Der Hintergrund ist individuell anpassbar, was eine flexible Gestaltung ermöglicht. Die Klick-Animation wird über activeOpacity gesteuert und bietet dem Nutzer visuelles Feedback bei der Interaktion.
 
-\noindent\textbf{Verwendung:} Field eignet sich für verschiedene Interaktionsmöglichkeiten, z.B. als Mengen-Auswahl, Aktions-Button oder für Eingabefelder mit Icon. Das Design ist flexibel und kann mit unterschiedlichen Icons, Farben und Texten verwendet werden.
+\noindent\textbf{Verwendung:} Field eignet sich für verschiedene Interaktionsmöglichkeiten, beispielsweise als Mengen-Auswahl, Aktions-Button oder für Eingabefelder mit Icon-Unterstützung. Das Design ist flexibel angelegt und kann mit unterschiedlichen Icons, Farben und Texten verwendet werden, um verschiedene Anwendungsfälle abzudecken.
 
 \subsubsection{QuantityInput}
 Die Komponente QuantityInput ist ein Eingabefeld für Mengenangaben, das Benutzern ermöglicht, eine Zahl durch Plus- und Minus-Buttons zu erhöhen oder zu verringern.
@@ -1250,20 +1153,12 @@ Die Komponente QuantityInput ist ein Eingabefeld für Mengenangaben, das Benutze
 \end{itemize}
 
 \textbf{Logik:}
-\begin{itemize}
-    \item Die aktuelle Menge wird im State quantity gehalten.
-    \item Beim Klick auf den Minus-Button wird die Menge um 1 verringert, solange sie über dem Minimum liegt.
-    \item Beim Klick auf den Plus-Button wird die Menge um 1 erhöht, solange sie unter dem Maximum liegt.
-    \item Jede Änderung ruft den onChange-Callback mit dem neuen Wert auf.
-\end{itemize}
+Die aktuelle Menge wird im State quantity verwaltet und bietet eine zentrale Kontrolle über den Wert. Beim Klick auf den Minus-Button wird die Menge um eins verringert, solange sie über dem definierten Minimum liegt. Entsprechend wird beim Klick auf den Plus-Button die Menge um eins erhöht, solange sie unter dem festgelegten Maximum bleibt. Jede Änderung löst den onChange-Callback mit dem neuen Wert aus, was eine nahtlose Integration in übergeordnete Komponenten ermöglicht.
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Die Komponente besteht aus einer horizontalen Reihe mit Minus-Button, Mengenanzeige und Plus-Button.
-    \item Die Buttons sind rund und heben sich optisch ab, die aktuelle Menge wird mittig angezeigt.
-\end{itemize}
+Die Komponente besteht aus einer horizontal angeordneten Reihe mit einem Minus-Button, der zentralen Mengenanzeige und einem Plus-Button. Die Buttons sind rund gestaltet und heben sich optisch deutlich ab, während die aktuelle Menge mittig und gut lesbar angezeigt wird.
 
-\noindent\textbf{Verwendung:} QuantityInput eignet sich für Produktdetailseiten oder Warenkörbe, wo Nutzer die gewünschte Menge eines Artikels einstellen können. Sie ist intuitiv bedienbar und flexibel einsetzbar.
+\noindent\textbf{Verwendung:} QuantityInput eignet sich optimal für Produktdetailseiten oder Warenkörbe, wo Nutzer die gewünschte Menge eines Artikels präzise einstellen können. Sie ist intuitiv bedienbar und flexibel in verschiedenen Kontexten einsetzbar.
 
 \subsubsection{ProductLoadingSkeleton}
 Die Komponente ProductLoadingSkeleton zeigt ein Ladeplatzhalter-Layout für Produktdetailseiten an, während die echten Daten geladen werden.
@@ -1271,19 +1166,12 @@ Die Komponente ProductLoadingSkeleton zeigt ein Ladeplatzhalter-Layout für Prod
 \noindent\textbf{Aufbau und Funktionsweise:}
 
 \textbf{Darstellung:}
-\begin{itemize}
-    \item Die Komponente besteht aus mehreren grauen, animierten Rechtecken ("Skeletons"), die die Struktur der später angezeigten Produktinformationen nachahmen.
-    \item Es gibt Platzhalter für das Produktbild, Titel, Varianten, Angebote und einen Button.
-    \item Die Platzhalter sind mit der Klasse animate-pulse versehen, um eine pulsierende Ladeanimation darzustellen.
-\end{itemize}
+Die Komponente besteht aus mehreren grauen, animierten Rechtecken (``Skeletons''), die die Struktur der später angezeigten Produktinformationen nachahmen und dem Nutzer eine Vorschau auf das kommende Layout bieten. Es sind Platzhalter für das Produktbild, den Titel, Varianten, Angebote und einen Button vorhanden, die alle wichtigen Bereiche der Produktdetailseite abdecken. Die Platzhalter sind mit der Klasse animate-pulse versehen, um eine pulsierende Ladeanimation darzustellen, die Aktivität signalisiert und die Wartezeit angenehmer gestaltet.
 
 \textbf{Layout:}
-\begin{itemize}
-    \item Die Elemente sind optisch so angeordnet, wie die echten Produktdetails später erscheinen würden.
-    \item Das Layout ist responsiv und zentriert.
-\end{itemize}
+Die Elemente sind optisch so angeordnet, wie die echten Produktdetails später erscheinen werden, was eine nahtlose Transition gewährleistet. Das Layout ist responsiv gestaltet und zentriert ausgerichtet, um auf verschiedenen Bildschirmgrößen optimal zu funktionieren.
 
-\noindent\textbf{Verwendung:} ProductLoadingSkeleton wird angezeigt, wenn Produktdaten noch nicht geladen sind, um dem Nutzer ein visuelles Feedback zu geben und die Wartezeit angenehmer zu gestalten. Sie verbessert die User Experience durch ein modernes Lade-Design.
+\noindent\textbf{Verwendung:} ProductLoadingSkeleton wird angezeigt, wenn Produktdaten noch nicht vollständig geladen sind, um dem Nutzer visuelles Feedback zu geben und die Wartezeit angenehmer zu gestalten. Sie verbessert die User Experience erheblich durch ein modernes Lade-Design, das Transparenz über den Ladezustand schafft und die wahrgenommene Ladezeit reduziert.
 
 \vspace{1em}
 \noindent
