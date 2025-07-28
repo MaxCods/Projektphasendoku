@@ -245,7 +245,60 @@ Die Entwicklung des Search-Screens stellte verschiedene komplexe Herausforderung
 
 Die State-Synchronisation stellte eine weitere Herausforderung dar, da Filter automatisch bei Änderung der Auswahl angewendet und gleichzeitig mit dem globalen Context synchronisiert werden müssen. Besondere Aufmerksamkeit galt auch der User Experience, wobei eine durchdachte Reset- und Apply-Logik im Filter-Modal implementiert wurde, die dem Nutzer sofortige Rückmeldung bei Suche und Filterung bietet.
 
+
+\clearpage
+
+\section{Details-Screen}
+
+\label{sec:details_screen}
+\renewcommand{\authorinitials}{DH}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{media/details-screen.png}
+    \caption{Details-Screen mit Produktbild, Varianten und Angeboten}
+\end{figure}
+
+\subsection{Zweck des Screens}
+Der Details-Screen bietet dem Nutzer eine umfassende Darstellung eines ausgewählten Produkts. Er dient als zentrale Informationsquelle, in der alle wichtigen Details wie Varianten (Größe und Einheit), verfügbare Angebote aus unterschiedlichen Stores und die zugehörigen Preise angezeigt werden. Der Nutzer kann hier die gewünschte Menge eines Produkts festlegen und dieses direkt in seine Einkaufsliste übernehmen. Neben der reinen Darstellung ermöglicht der Screen somit auch direkte Interaktionen mit dem Produkt.
+
+\subsection{UI/UX-Beschreibung}
+Der Screen ist in mehrere logische Bereiche unterteilt, die auf eine intuitive Nutzerführung ausgerichtet sind. Oben links befindet sich ein runder Schließen-Button (ButtonRound) mit einem X-Icon, über den der Nutzer jederzeit zur vorherigen Ansicht zurückkehren kann. Zentral im oberen Bereich wird das Produktbild angezeigt, welches durch einen Schatteneffekt optisch hervorgehoben wird.
+
+Darunter folgen der Produktname, die Marke und der berechnete Gesamtpreis, der dynamisch an die ausgewählte Menge angepasst wird. Im Anschluss daran hat der Nutzer die Möglichkeit, zwischen verschiedenen Produktvarianten zu wählen. Diese Varianten – etwa unterschiedliche Größen oder Verpackungseinheiten – sind als klickbare Elemente angeordnet. Die jeweils ausgewählte Variante wird durch eine grün hinterlegte Markierung mit einem Haken (Check-Icon) hervorgehoben.
+
+Im Bereich „Available at“ werden alle verfügbaren Angebote der Stores für die ausgewählte Variante angezeigt. Neben dem Store-Namen und dem Preis pro Einheit wird auch der Basispreis (€/Einheit) dargestellt. Ein grünes Blitz-Symbol (Zap-Icon) markiert gültige Angebote. 
+
+Am unteren Rand befindet sich die Mengensteuerung (QuantityInput). Hier kann der Nutzer über Plus- und Minus-Buttons die Menge anpassen, wobei der Gesamtpreis im oberen Bereich automatisch aktualisiert wird. Schließlich gibt es einen großen, grünen „Add“-Button (Field-Komponente mit Einkaufswagen-Icon), über den das ausgewählte Produkt mit der eingestellten Menge zur Einkaufsliste hinzugefügt wird.
+
+\subsection{User Flow}
+In der Regel gelangt der Nutzer von einer Produktliste oder einer Suche auf diesen Screen, wenn er ein bestimmtes Produkt genauer ansehen möchte. Nachdem er eine Variante und einen Store ausgewählt und die gewünschte Menge festgelegt hat, kann er das Produkt über den „Add“-Button speichern. Ein Klick auf den Schließen-Button bringt ihn zurück zum vorherigen Screen, etwa zur Suche oder Explore-Ansicht. Der gesamte Ablauf ist darauf ausgelegt, dass der Nutzer möglichst schnell und einfach Produkte vergleichen und hinzufügen kann.
+
+\subsection{Technische Perspektive}
+
+\subsubsection{Code-Architektur}
+Die Hauptlogik wird in der React-Komponente \texttt{DetailsScreen} umgesetzt. Diese ist in mehrere, klar getrennte Unterkomponenten gegliedert. Für die Mengenauswahl wird die \texttt{QuantityInput}-Komponente verwendet, während die Schaltfläche zum Hinzufügen des Produkts (\texttt{Add}-Button) durch die \texttt{Field}-Komponente realisiert wird. Ein runder \texttt{ButtonRound} übernimmt die Funktion des Schließen-Buttons. Für den Ladezustand, der beim Abrufen der Produktdaten angezeigt wird, ist die \texttt{ProductLoadingSkeleton}-Komponente zuständig.
+
+\subsubsection{State Management}
+Alle dynamischen Daten werden über React State gesteuert. Dazu gehören das ausgewählte Produkt (\texttt{product}), die aktuell gewählte Variante (\texttt{selectedVariantIdx}), das ausgewählte Store-Angebot (\texttt{selectedStoreOfferIdx}), die Menge (\texttt{quantity}) sowie der Ladezustand (\texttt{isLoading}). Die State-Änderungen erfolgen reaktiv und sorgen dafür, dass alle abhängigen UI-Elemente – insbesondere Preis und Angebote – in Echtzeit aktualisiert werden.
+
+\subsubsection{API/Service}
+Die Produktdaten werden asynchron über die Methode \texttt{api.getProductById(id)} geladen. Sobald der Nutzer das Produkt zur Einkaufsliste hinzufügen möchte, wird \texttt{api.addToShoppingListFromDetails(variant, quantity)} aufgerufen. Beide Methoden kommunizieren mit dem Backend über die zentrale API-Schnittstelle der App.
+
+\subsubsection{Wichtige Funktionen und Logik}
+Eine wesentliche Hilfsfunktion ist \texttt{isOfferValid(validFrom, validTo)}, die prüft, ob ein Angebot noch gültig ist und dieses entsprechend mit einem Zap-Icon kennzeichnet. Die Funktion \texttt{formatPrice(price)} sorgt dafür, dass Preise stets mit zwei Nachkommastellen angezeigt werden. \texttt{calculateTotalPrice()} berechnet den Gesamtpreis basierend auf dem ausgewählten Store-Angebot und der eingestellten Menge. Die Funktion \texttt{addToShoppingList()} übernimmt schließlich das Hinzufügen des Produkts zur Liste.
+
+\subsubsection{Besondere Herausforderungen}
+Eine Herausforderung bei der Implementierung war die dynamische Berechnung des günstigsten Angebots pro Einheit beim Laden der Daten. Diese Logik wurde bereits im \texttt{useEffect}-Hook umgesetzt, sodass beim ersten Anzeigen des Screens automatisch das günstigste Angebot vorausgewählt ist. Außerdem mussten UI-Elemente wie Preis und Varianten-Auswahl nahtlos mit dem State verknüpft werden, um eine reaktive Benutzererfahrung zu gewährleisten. 
+
+
+
+\clearpage
+
 \section{UI-Komponenten}
+\renewcommand{\authorinitials}{NK}
+
 \label{sec:ui_komponenten}
 
 \subsection{Home(index)}
