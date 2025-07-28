@@ -7,45 +7,11 @@
 
 \section{Backend-Aufbau und Signalverarbeitung}
 
-Das Backend der Smart Shopping App basiert wie bereits erähnt auf einer modernen Express.js-Architektur mit TypeScript und folgt dem bewährten Controller-Service-Pattern. Die Anwendung ist in mehrere Schichten unterteilt, um eine klare Trennung der Verantwortlichkeiten zu gewährleisten.
+Das Backend der Smart Shopping App basiert wie bereits erwähnt auf einer modernen Express.js-Architektur mit TypeScript und folgt dem bewährten Controller-Service-Pattern. Die Anwendung ist in mehrere Schichten unterteilt, um eine klare Trennung der Verantwortlichkeiten zu gewährleisten.
 
 \subsection{Express.js App-Struktur}
 
-Die Hauptanwendung wird in \texttt{app.ts} konfiguriert und folgt einer Middleware-Pipeline-Architektur:
-
-\begin{lstlisting}[style=typescriptstyle,caption={Express.js App-Konfiguration}]
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import apiRoutes from "@/routes";
-import errorHandler from "@/middleware/errorHandler";
-import { clerkMiddleware } from "@clerk/express";
-import { requireAuth }  from "@/lib/auth";
-
-dotenv.config();
-
-const app = express();
-
-app.use(express.json());
-app.use(cors());
-app.use(clerkMiddleware());
-
-app.use("/api", requireAuth(), apiRoutes);
-
-app.use(errorHandler);
-
-export default app;
-\end{lstlisting}
-
-Die Middleware-Pipeline verarbeitet Requests in folgender Reihenfolge:
-\begin{enumerate}
-    \item \textbf{JSON-Parsing:} Automatische Deserialisierung von JSON-Requests
-    \item \textbf{CORS:} Cross-Origin Resource Sharing für Frontend-Kommunikation
-    \item \textbf{Clerk Middleware:} Authentifizierung und User-Management
-    \item \textbf{Auth Guard:} Zusätzliche Authentifizierungsprüfung
-    \item \textbf{API Routes:} Routing zu spezifischen Endpunkten
-    \item \textbf{Error Handler:} Zentrale Fehlerbehandlung
-\end{enumerate}
+Die Hauptanwendung wird in \texttt{app.ts} konfiguriert und folgt einer \textbf{Middleware-Pipeline}-Architektur. Diese Pipeline verarbeitet jeden eingehenden Request durch verschiedene Schichten: \textbf{JSON-Parsing} wandelt automatisch JSON-Requests in JavaScript-Objekte um, \textbf{CORS} erlaubt dem Frontend den Zugriff auf die API, und die \textbf{Authentifizierung} überprüft die Benutzeridentität. Anschließend leiten die \textbf{API Routes} zu den entsprechenden Endpunkten weiter, während der \textbf{Error Handler} am Ende alle Fehler abfängt und strukturiert beantwortet. Diese Architektur sorgt für eine saubere Trennung der Verantwortlichkeiten und macht das System wartbar und erweiterbar. Im weiteren Verlauf des Kapitels werden die einzelnen Komponenten wie \textbf{Authentifizierung}, \textbf{Routing-Struktur} und \textbf{Error Handling} detailliert erläutert.
 
 \subsection{Authentifizierung mit Clerk}
 
@@ -112,22 +78,7 @@ Die API folgt RESTful-Prinzipien und ist in logische Ressourcen-Gruppen untertei
 
 \subsection{Routing-Struktur}
 
-Die API-Routen sind modular organisiert und werden über einen zentralen Router verwaltet:
-
-\begin{lstlisting}[style=typescriptstyle,caption={Zentraler API-Router}]
-import { Router } from "express";
-import productsRouter from "./products";
-import shoppingListRouter from "./shoppingLists";
-import storesRouter from "./stores";
-
-const api = Router();
-
-api.use("/products", productsRouter);
-api.use("/shoppinglist", shoppingListRouter);
-api.use("/stores", storesRouter);
-
-export default api;
-\end{lstlisting}
+Die Routen sind \textbf{modular organisiert} und werden über einen zentralen Router verwaltet. Die Routing-Struktur folgt dem bewährten Express.js-Pattern mit separaten Router-Modulen für jede Ressource. \textbf{Products}, \textbf{Shopping Lists} und \textbf{Stores} haben jeweils eigene Dateien für jeden Layer, die über den zentralen API-Router eingebunden werden. Diese Struktur ermöglicht eine klare Trennung der Verantwortlichkeiten und erleichtert die Wartung und Erweiterung der API.
 
 \subsection{Controller-Service-Pattern}
 
@@ -378,22 +329,7 @@ Das Backend wird über \textbf{TypeScript-Kompilierung} in JavaScript-Code umgew
 
 \subsection{Test-Setup und Framework}
 
-Das Backend verwendet Jest als Test-Framework mit Supertest für HTTP-API-Tests:
-
-\begin{lstlisting}[style=typescriptstyle,caption={Jest-Konfiguration}]
-import type { Config } from 'jest';
-
-const config: Config = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.test.ts'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-};
-
-export default config;
-\end{lstlisting}
+Das Backend verwendet \textbf{Jest} als Test-Framework mit \textbf{Supertest} für HTTP-API-Tests. Die Jest-Konfiguration ist auf \textbf{TypeScript} optimiert und verwendet das \textbf{ts-jest}-Preset für nahtlose Unterstützung. Die \textbf{Node.js}-Testumgebung ermöglicht das Testen von Backend-Code ohne Browser-Simulation. \textbf{Path-Aliase} werden über \texttt{moduleNameMapper} konfiguriert, um die \texttt{@/}-Imports korrekt aufzulösen. Die \texttt{testMatch}-Konfiguration stellt sicher, dass nur Dateien im \texttt{\_\_tests\_\_}-Verzeichnis mit der Endung \texttt{.test.ts} als Tests erkannt werden.
 
 \subsection{Authentifizierungstests}
 
@@ -433,25 +369,15 @@ describe('Shopping List API', () => {
 
 \subsection{Mocking-Strategien}
 
-Die Tests verwenden eine Kombination aus \textbf{Mocking} und \textbf{echter Infrastruktur}. Die \textbf{Clerk-Authentifizierung} wird gemockt, um verschiedene Authentifizierungsszenarien zu simulieren und Test-User-IDs bereitzustellen. Die \textbf{echte Datenbank} wird für vollständige Integration Tests verwendet, was eine realistische Testumgebung gewährleistet. Die \textbf{Middleware-Pipeline} wird vollständig durchlaufen, wodurch alle Authentifizierungs- und Validierungsschritte getestet werden.
+Die Tests verwenden eine Kombination aus \textbf{Mocking} und \textbf{echter Infrastruktur}. Die \textbf{Clerk-Authentifizierung} wird gemockt, um verschiedene Authentifizierungsszenarien zu simulieren und Test-User-IDs bereitzustellen. Die \textbf{echte Datenbank} wird für vollständige Integration Tests verwendet, was eine realistische Testumgebung gewährleistet. Die \textbf{Middleware-Pipeline} wird vollständig durchlaufen, wodurch alle Authentifizierungs- und Validierungsschritte getestet werden. Diese Strategie ermöglicht es, sowohl die Authentifizierungslogik als auch die Datenbankintegration in einem einzigen Test zu überprüfen.
 
 \subsection{Test-Ausführung}
 
-\begin{lstlisting}[language=bash,caption={Test-Befehle}]
-# Alle Tests ausfuehren
-npm test
-
-# Tests im Watch-Modus
-npm test -- --watch
-
-# Spezifische Test-Datei
-npm test -- authHeader.test.ts
-npm test -- shoppingList.test.ts
-\end{lstlisting}
+Die Test-Ausführung erfolgt über \texttt{npm test} und nutzt die zuvor beschriebene Jest-Konfiguration. Für die Entwicklung steht ein \textbf{Watch-Modus} zur Verfügung, der Tests automatisch bei Code-Änderungen neu ausführt. Spezifische Test-Dateien können über \texttt{npm test -- filename.test.ts} gezielt ausgeführt werden, was besonders bei der Entwicklung einzelner Features nützlich ist. Die Test-Ausführung erfolgt in der \textbf{Node.js}-Umgebung und unterstützt sowohl einzelne Test-Suites als auch die vollständige Test-Suite. Diese Flexibilität ermöglicht eine effiziente Entwicklung und Debugging der Backend-Funktionalität.
 
 \subsection{Ausblick: Erweiterte Tests}
 
-Das Backend fokussiert sich auf \textbf{Integration Tests} und verzichtet bewusst auf \textbf{Unit Tests}. Dies liegt daran, dass die meisten Backend-Funktionen stark mit der Datenbank und Authentifizierung verknüpft sind. Unit Tests würden umfangreiches Mocking der Datenbank und Authentifizierung erfordern, was die Tests komplexer und weniger aussagekräftig machen würde. Die Integration Tests decken bereits die wichtigsten Szenarien ab und bieten eine realistische Testumgebung. Für zukünftige Erweiterungen könnten \textbf{Performance-Tests} für kritische Endpunkte und \textbf{Load-Tests} für die Skalierbarkeit implementiert werden.
+Basierend auf der beschriebenen Test-Strategie fokussiert sich das Backend bewusst auf \textbf{Integration Tests} und verzichtet auf \textbf{Unit Tests}. Diese Entscheidung liegt daran, dass die meisten Backend-Funktionen stark mit der Datenbank und Authentifizierung verknüpft sind. Unit Tests würden umfangreiches Mocking der Datenbank und Authentifizierung erfordern, was die Tests komplexer und weniger aussagekräftig machen würde. Die Integration Tests decken bereits die wichtigsten Szenarien ab und bieten eine realistische Testumgebung. Für zukünftige Erweiterungen könnten \textbf{Performance-Tests} für kritische Endpunkte und \textbf{Load-Tests} für die Skalierbarkeit implementiert werden, um die Robustheit der Anwendung weiter zu verbessern.
 
 \section{Fazit}
 
