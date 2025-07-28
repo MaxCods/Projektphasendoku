@@ -37,7 +37,7 @@ export const requireAuth = () => (
 };
 \end{lstlisting}
 
-Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token (JSON Web Token), die dann in Controllern für user-spezifische Operationen verwendet wird.
+Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token (JSON Web Token), die dann in Controllern für user-spezifische Operationen verwendet wird. Diese Middleware stellt sicher, dass nur authentifizierte Benutzer auf die API zugreifen können. Falls kein gültiger Token vorhanden ist, wird eine 401-Fehlermeldung zurückgegeben. Diese Implementierung ermöglicht eine sichere, benutzerbasierte Datenisolation, da jeder Request automatisch mit der korrekten Benutzer-ID verknüpft wird.
 
 \subsection{Error Handling und Middleware}
 
@@ -59,7 +59,7 @@ export default function errorHandler(
 }
 \end{lstlisting}
 
-Datenbankfehler werden speziell behandelt und mit dem Präfix "DB\_ERROR" gekennzeichnet, während andere Fehler mit einem generischen 500-Status beantwortet werden.
+Datenbankfehler werden speziell behandelt und mit dem Präfix "DB\_ERROR" gekennzeichnet, während andere Fehler mit einem generischen 500-Status beantwortet werden. Diese zentrale Fehlerbehandlung stellt sicher, dass alle Fehler einheitlich formatiert werden und keine sensiblen Informationen an den Client weitergegeben werden. Der Error Handler fängt sowohl erwartete Fehler (wie Validierungsfehler) als auch unerwartete Systemfehler ab und wandelt sie in benutzerfreundliche Response-Formate um. Zusätzlich werden alle Fehler für Debugging-Zwecke geloggt, ohne dass interne Systemdetails nach außen dringen. Diese Implementierung verbessert sowohl die Sicherheit als auch die Benutzerfreundlichkeit der API.
 
 \subsection{Request/Response-Flow}
 
@@ -317,7 +317,7 @@ Auf technischer Ebene bietet \textbf{TypeScript-Typisierung} bereits zur Kompili
 
 \subsection{Umgebungskonfiguration}
 
-Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \textbf{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \textbf{CLERK\_SECRET\_KEY} und \textbf{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \textbf{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
+Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \texttt{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \texttt{CLERK\_SECRET\_KEY} und \texttt{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \texttt{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
 
 \subsection{Build und Deployment}
 
