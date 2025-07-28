@@ -37,7 +37,7 @@ export const requireAuth = () => (
 };
 \end{lstlisting}
 
-Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token (JSON Web Token), die dann in Controllern für user-spezifische Operationen verwendet wird.
+Die \texttt{getAuth(req)}-Funktion extrahiert automatisch die User-ID aus dem JWT-Token (JSON Web Token), die dann in Controllern für user-spezifische Operationen verwendet wird. Diese Middleware stellt sicher, dass nur authentifizierte Benutzer auf die API zugreifen können. Falls kein gültiger Token vorhanden ist, wird eine 401-Fehlermeldung zurückgegeben. Diese Implementierung ermöglicht eine sichere, benutzerbasierte Datenisolation, da jeder Request automatisch mit der korrekten Benutzer-ID verknüpft wird.
 
 \subsection{Error Handling und Middleware}
 
@@ -59,7 +59,7 @@ export default function errorHandler(
 }
 \end{lstlisting}
 
-Datenbankfehler werden speziell behandelt und mit dem Präfix "DB\_ERROR" gekennzeichnet, während andere Fehler mit einem generischen 500-Status beantwortet werden.
+Datenbankfehler werden speziell behandelt und mit dem Präfix "DB\_ERROR" gekennzeichnet, während andere Fehler mit einem generischen 500-Status beantwortet werden. Diese zentrale Fehlerbehandlung stellt sicher, dass alle Fehler einheitlich formatiert werden und keine sensiblen Informationen an den Client weitergegeben werden. Der Error Handler fängt sowohl erwartete Fehler (wie Validierungsfehler) als auch unerwartete Systemfehler ab und wandelt sie in benutzerfreundliche Response-Formate um. Zusätzlich werden alle Fehler für Debugging-Zwecke geloggt, ohne dass interne Systemdetails nach außen dringen. Diese Implementierung verbessert sowohl die Sicherheit als auch die Benutzerfreundlichkeit der API.
 
 \subsection{Request/Response-Flow}
 
@@ -104,7 +104,7 @@ Controller sind für Request/Response-Handling zuständig, während Services die
 
 \subsection{API-Dokumentation}
 
-Alle API-Endpunkte erfordern Authentifizierung über einen Bearer Token im Authorization-Header. Im folgenden Teil werden die API-Requests aufgezählt und kurz beschrieben:
+Alle API-Endpunkte erfordern Authentifizierung über einen Bearer Token im Authorization-Header. Im folgenden Teil werden API-Requests aufgezählt und kurz beschrieben:
 
 \subsubsection{\texttt{POST /api/shoppinglist/}}
 
@@ -303,7 +303,7 @@ export const getShoppingListItems = async (userId: string) => {
 
 \section{Performance und Skalierung}
 
-Das Backend implementiert bereits einige \textbf{Performance-Optimierungen}. Prisma's \texttt{include}-Funktionalität ermöglicht das schon kurz erwähnte \textbf{Eager Loading}, wodurch verwandte Daten in einer einzigen Abfrage geladen werden können. Dies reduziert die Anzahl der Datenbankzugriffe erheblich. Zusätzlich übernimmt Prisma automatisch das \textbf{Connection Pooling} und verwaltet die Datenbankverbindungen effizient. Die \textbf{stateless-Architektur} des Backends ermöglicht es, dass mehrere Instanzen parallel laufen können, ohne dass Daten zwischen ihnen geteilt werden müssen.
+Das Backend implementiert bereits einige \textbf{Performance-Optimierungen}. Prisma's \texttt{include}-Funktionalität ermöglicht das schon kurz erwähnte, so genannte \textbf{Eager Loading}, wodurch verwandte Daten in einer einzigen Abfrage geladen werden können. Dies reduziert die Anzahl der Datenbankzugriffe erheblich. Zusätzlich übernimmt Prisma automatisch das \textbf{Connection Pooling} und verwaltet die Datenbankverbindungen effizient. Die \textbf{stateless-Architektur} des Backends ermöglicht es, dass mehrere Instanzen parallel laufen können, ohne dass Daten zwischen ihnen geteilt werden müssen.
 
 Für zukünftige Skalierung könnten weitere Optimierungen implementiert werden. \textbf{Horizontal Scaling} durch Load Balancing würde es ermöglichen, mehrere Backend-Instanzen hinter einem Load Balancer zu betreiben. Die Datenbank könnte durch \textbf{Read-Replicas} erweitert werden, um Leseoperationen zu verteilen und die Hauptdatenbank zu entlasten. \textbf{Redis-Integration} für Caching würde häufig abgerufene Daten im Speicher halten und die Antwortzeiten deutlich verbessern. Zusätzlich könnten \textbf{Datenbankindizes} für häufig verwendete Abfragen optimiert werden.
 
@@ -317,7 +317,7 @@ Auf technischer Ebene bietet \textbf{TypeScript-Typisierung} bereits zur Kompili
 
 \subsection{Umgebungskonfiguration}
 
-Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \textbf{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \textbf{CLERK\_SECRET\_KEY} und \textbf{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \textbf{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
+Das Backend nutzt \textbf{Umgebungsvariablen} für eine flexible und sichere Konfiguration. Diese Variablen werden über \texttt{.env}-Dateien oder direkt in der Deployment-Umgebung gesetzt. Die \texttt{DATABASE\_URL} definiert die Verbindung zur PostgreSQL-Datenbank und wird von Prisma automatisch erkannt. Für die \textbf{Authentifizierung} werden\\ \texttt{CLERK\_SECRET\_KEY} und \texttt{CLERK\_PUBLISHABLE\_KEY} verwendet, die von der Clerk-Plattform bereitgestellt werden. Der \texttt{PORT} bestimmt, auf welchem Port der Server läuft, während \textbf{NODE\_ENV} die Laufzeitumgebung definiert und das Verhalten der Anwendung beeinflusst. Diese Konfiguration ermöglicht es, die gleiche Codebasis in verschiedenen Umgebungen zu verwenden, ohne Änderungen am Code vornehmen zu müssen.
 
 \subsection{Build und Deployment}
 
